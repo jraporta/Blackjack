@@ -2,6 +2,7 @@ package com.cat.itacademy.s05.blackjack.model;
 
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
@@ -10,5 +11,4 @@ public class Game {
     private String id;
 
     private List<Player> players;
-
 }
