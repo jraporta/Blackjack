@@ -8,6 +8,7 @@ import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.model.PlayerInGame;
 import com.cat.itacademy.s05.blackjack.repositories.GameRepository;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +23,11 @@ public class GameService {
     }
 
     //TODO: read https://projectreactor.io/docs/core/release/reference/#reactive.subscribe
-    public String createGame(Long playerId) {
+    public Mono<String> createGame(Long playerId) {
         List<PlayerInGame> players = new ArrayList<>();
         players.add(new PlayerInGame(playerId, "some name"));
         Game game = new Game(null, players);
-        gameRepository.save(game);
-        return game.id();
+        return gameRepository.save(game).map(Game::id);
     }
 
     //TODO

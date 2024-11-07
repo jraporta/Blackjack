@@ -9,8 +9,10 @@ import com.cat.itacademy.s05.blackjack.services.GameService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 public class Controller {
@@ -22,9 +24,9 @@ public class Controller {
     }
 
     @PostMapping("/game/new")
-    public ResponseEntity<String> createGame(@RequestBody Long playerId){
-        String gameId = gameService.createGame(playerId);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Created game with id: " + gameId);
+    public Mono<ResponseEntity<String>> createGame(@RequestBody Long playerId){
+        return gameService.createGame(playerId)
+                .map(gameId -> ResponseEntity.status(HttpStatus.CREATED).body("Created game with id: " + gameId));
     }
 
     @GetMapping("/game/{id}")
