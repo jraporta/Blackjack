@@ -22,7 +22,7 @@ public class Controller {
     }
 
     @PostMapping("/game/new")
-    public ResponseEntity<String> createGame(@RequestBody String playerId){
+    public ResponseEntity<String> createGame(@RequestBody Long playerId){
         String gameId = gameService.createGame(playerId);
         return ResponseEntity.status(HttpStatus.CREATED).body("Created game with id: " + gameId);
     }

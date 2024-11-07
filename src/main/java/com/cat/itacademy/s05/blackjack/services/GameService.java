@@ -5,6 +5,8 @@ import com.cat.itacademy.s05.blackjack.dto.PlayResponseDTO;
 import com.cat.itacademy.s05.blackjack.dto.PlayerDTO;
 import com.cat.itacademy.s05.blackjack.model.Game;
 import com.cat.itacademy.s05.blackjack.model.Player;
+import com.cat.itacademy.s05.blackjack.model.PlayerInGame;
+import com.cat.itacademy.s05.blackjack.repositories.GameRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,14 +15,24 @@ import java.util.List;
 @Service
 public class GameService {
 
-    //TODO
-    public String createGame(String player) {
-    return "{gameId}";
+    private final GameRepository gameRepository;
+
+    public GameService(GameRepository gameRepository) {
+        this.gameRepository = gameRepository;
+    }
+
+    //TODO: read https://projectreactor.io/docs/core/release/reference/#reactive.subscribe
+    public String createGame(Long playerId) {
+        List<PlayerInGame> players = new ArrayList<>();
+        players.add(new PlayerInGame(playerId, "some name"));
+        Game game = new Game(null, players);
+        gameRepository.save(game);
+        return game.id();
     }
 
     //TODO
     public Game getGame(String gameId) {
-        return new Game();
+        return new Game(null, null);
     }
 
     //TODO
