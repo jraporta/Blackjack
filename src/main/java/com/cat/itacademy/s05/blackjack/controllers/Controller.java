@@ -5,6 +5,7 @@ import com.cat.itacademy.s05.blackjack.dto.PlayerDTO;
 import com.cat.itacademy.s05.blackjack.model.Game;
 import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.services.GameService;
+import com.cat.itacademy.s05.blackjack.services.PlayService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,11 @@ import java.util.List;
 public class Controller {
 
     private final GameService gameService;
+    private final PlayService playService;
 
-    public Controller(GameService gameService) {
+    public Controller(GameService gameService, PlayService playService) {
         this.gameService = gameService;
+        this.playService = playService;
     }
 
     @PostMapping("/game/new")
@@ -34,7 +37,7 @@ public class Controller {
 
     @PostMapping("/game/{id}/play")
     public Mono<ResponseEntity<Game>> executePlay(@PathVariable String id, @RequestBody PlayDTO play){
-        return gameService.executePlay(id, play).flatMap(game -> Mono.just(ResponseEntity.ok(game)));
+        return playService.executePlay(id, play).flatMap(game -> Mono.just(ResponseEntity.ok(game)));
     }
 
     @DeleteMapping("/game/{id}/delete")

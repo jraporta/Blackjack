@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,11 +23,11 @@ public class Game {
 
     private int activePlayer = 0;
 
-    private List<Card> deck;
+    private Deck deck;
 
     {
         Croupier croupier = new Croupier();
-        deck = new ArrayList<>();
+        deck = new Deck();
         deckService.generateDeck();
     }
 
