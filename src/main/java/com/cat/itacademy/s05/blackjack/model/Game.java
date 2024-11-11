@@ -5,11 +5,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
 @Getter
 @Setter
+@Document(collection = "games")
 public class Game {
 
     @Autowired
@@ -27,8 +29,6 @@ public class Game {
 
     {
         Croupier croupier = new Croupier();
-        deck = new Deck();
-        deckService.generateDeck();
     }
 
     //TODO: Skip players that have passed

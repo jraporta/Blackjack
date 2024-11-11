@@ -15,19 +15,17 @@ public class DeckService {
     @Value("${numberOfDecks}")
     private int numberOfDecks;
 
-    private Deck deck;
-
-    public void generateDeck(){
+    public void generateDeck(Deck deck){
         for (int i = 0; i < numberOfDecks; i++) {
             for (Suit suit : Suit.values()) {
                 for (Rank rank : Rank.values()) {
-                    this.deck.getDeck().add(new Card(suit, rank));
+                    deck.getDeck().add(new Card(suit, rank));
                 }
             }
         }
     }
 
-    public Card getCard(){
+    public Card getCard(Deck deck){
         return deck.getDeck().remove(ThreadLocalRandom.current().nextInt(deck.getDeck().size()));
     }
 

@@ -2,6 +2,7 @@ package com.cat.itacademy.s05.blackjack.services;
 
 import com.cat.itacademy.s05.blackjack.dto.PlayerDTO;
 import com.cat.itacademy.s05.blackjack.exceptions.GameNotFoundException;
+import com.cat.itacademy.s05.blackjack.model.Deck;
 import com.cat.itacademy.s05.blackjack.model.Game;
 import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.model.PlayerInGame;
@@ -18,10 +19,12 @@ public class GameService {
 
     private final GameRepository gameRepository;
     private final PlayerService playerService;
+    private final DeckService deckService;
 
-    public GameService(GameRepository gameRepository, PlayerService playerService) {
+    public GameService(GameRepository gameRepository, PlayerService playerService, DeckService deckService) {
         this.gameRepository = gameRepository;
         this.playerService = playerService;
+        this.deckService = deckService;
     }
 
     public Mono<String> createGame(String playerName) {
@@ -33,6 +36,9 @@ public class GameService {
                     players.add(playerInGame);
                     Game game = new Game();
                     game.setPlayers(players);
+                    Deck deck = new Deck();
+                    deckService.generateDeck(deck);
+                    game.setDeck(deck);
                     return gameRepository.save(game);
                 })
                 .map(Game::getId);
