@@ -1,7 +1,6 @@
 package com.cat.itacademy.s05.blackjack.controllers;
 
 import com.cat.itacademy.s05.blackjack.dto.PlayDTO;
-import com.cat.itacademy.s05.blackjack.dto.PlayResponseDTO;
 import com.cat.itacademy.s05.blackjack.dto.PlayerDTO;
 import com.cat.itacademy.s05.blackjack.model.Game;
 import com.cat.itacademy.s05.blackjack.model.Player;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 public class Controller {
@@ -24,23 +22,23 @@ public class Controller {
     }
 
     @PostMapping("/game/new")
-    public Mono<ResponseEntity<String>> createGame(@RequestBody Long playerId){
-        return gameService.createGame(playerId)
+    public Mono<ResponseEntity<String>> createGame(@RequestBody String playerName){
+        return gameService.createGame(playerName)
                 .map(gameId -> ResponseEntity.status(HttpStatus.CREATED).body("Created game with id: " + gameId));
     }
 
     @GetMapping("/game/{id}")
-    public ResponseEntity<Game> getGame(@PathVariable String id){
+    public ResponseEntity<Mono<Game>> getGame(@PathVariable String id){
         return ResponseEntity.ok(gameService.getGame(id));
     }
 
     @PostMapping("/game/{id}/play")
-    public ResponseEntity<PlayResponseDTO> executePlay(@PathVariable String gameId, @RequestBody PlayDTO play){
-        return ResponseEntity.ok(gameService.executePlay(gameId, play));
+    public Mono<ResponseEntity<Game>> executePlay(@PathVariable String id, @RequestBody PlayDTO play){
+        return gameService.executePlay(id, play).flatMap(game -> Mono.just(ResponseEntity.ok(game)));
     }
 
     @DeleteMapping("/game/{id}/delete")
-    public ResponseEntity<String> deleteGame(@PathVariable String gameId){
+    public ResponseEntity<String> deleteGame(@PathVariable String id){
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

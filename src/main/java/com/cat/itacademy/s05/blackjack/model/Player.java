@@ -1,15 +1,27 @@
 package com.cat.itacademy.s05.blackjack.model;
 
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 
+@Getter
+@Setter
+@Table("player")
 public class Player {
 
+    public Player(String name) {
+        this.name = name;
+        this.money = 100;
+        this.gamesPlayed = 0;
+    }
+
+    public Player() {
+    }
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
