@@ -1,5 +1,6 @@
 package com.cat.itacademy.s05.blackjack.model;
 
+import com.cat.itacademy.s05.blackjack.enums.PlayerStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +19,9 @@ public class PlayerInGame {
 
     private List<Card> cards;
 
+    private PlayerStatus status;
+
+    //TODO delete passed, use status instead
     boolean passed;
 
     public PlayerInGame(Long id, String name) {
@@ -25,6 +29,7 @@ public class PlayerInGame {
         this.name = name;
         this.bet = 0;
         this.cards = new ArrayList<>();
+        status = PlayerStatus.PENDING_BET;
         passed = false;
     }
 

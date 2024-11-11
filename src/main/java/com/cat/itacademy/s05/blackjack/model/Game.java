@@ -14,18 +14,22 @@ public class Game {
 
     private @Id String id;
 
+    private String description;
+
     private Croupier croupier;
 
     private List<PlayerInGame> players;
 
     private int activePlayer = 0;
 
+    //TODO jackson ignore on delivery
     private Deck deck;
 
     {
         croupier = new Croupier();
     }
 
+    //TODO move to player service
     //TODO: Skip players that have passed
     public Game changeActivePlayer() {
         activePlayer++;
