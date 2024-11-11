@@ -24,4 +24,9 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(ex.getMessage()));
     }
 
+    @ExceptionHandler(InvalidPlayException.class)
+    public Mono<ResponseEntity<String>> handleInvalidPlay(InvalidPlayException ex){
+        return Mono.just(ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(ex.getMessage()));
+    }
+
 }

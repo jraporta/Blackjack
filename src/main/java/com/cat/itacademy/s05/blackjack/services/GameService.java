@@ -2,10 +2,7 @@ package com.cat.itacademy.s05.blackjack.services;
 
 import com.cat.itacademy.s05.blackjack.dto.PlayerDTO;
 import com.cat.itacademy.s05.blackjack.exceptions.GameNotFoundException;
-import com.cat.itacademy.s05.blackjack.model.Deck;
-import com.cat.itacademy.s05.blackjack.model.Game;
-import com.cat.itacademy.s05.blackjack.model.Player;
-import com.cat.itacademy.s05.blackjack.model.PlayerInGame;
+import com.cat.itacademy.s05.blackjack.model.*;
 import com.cat.itacademy.s05.blackjack.repositories.GameRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -54,7 +51,6 @@ public class GameService {
     }
 
 
-
     //TODO
     public List<PlayerDTO> getRanking() {
         return new ArrayList<PlayerDTO>();
@@ -67,5 +63,9 @@ public class GameService {
 
     public Mono<Game> saveGame(Game game) {
         return gameRepository.save(game);
+    }
+
+    public void dealCard(Deck deck, List<Card> cards) {
+        cards.add(deckService.getCard(deck));
     }
 }
