@@ -1,6 +1,7 @@
 package com.cat.itacademy.s05.blackjack.services;
 
 import com.cat.itacademy.s05.blackjack.dto.PlayDTO;
+import com.cat.itacademy.s05.blackjack.dto.PlayerDTO;
 import com.cat.itacademy.s05.blackjack.enums.Play;
 import com.cat.itacademy.s05.blackjack.enums.PlayerStatus;
 import com.cat.itacademy.s05.blackjack.enums.Rank;
@@ -142,12 +143,30 @@ public class PlayService {
         return Mono.just(game);
     }
 
-    //TODO
+    //TODO cards with the same value (f.e. King, Queen) should allow split?
+    //TODO who should be the next player?
     private Mono<Game> playSplit(Game game, PlayDTO play) {
-        return Mono.just(game);
+        PlayerInGame player = game.getPlayers().get(game.getActivePlayer());
+        if (player.getCards().size() > 2) {
+            return Mono.error(new InvalidPlayException("Split is only allowed immediately after the initial deal."));
+        }
+        if (player.getCards().get(0).rank() != player.getCards().get(1).rank()) {
+            return Mono.error(new InvalidPlayException("Split is only allowed if the two cards have the same rank."));
+        }
+        return playerService.subtractMoney(player.getId(), player.getBet())
+                .then(Mono.defer(() -> gameService.addPlayer(game, player.getName())))
+                .flatMap(game1 -> {
+                    PlayerInGame oldHand = game1.getPlayers().get(game1.getActivePlayer());
+                    PlayerInGame newHand = game1.getPlayers().getLast();
+                    newHand.setBet(player.getBet());
+                    newHand.setStatus(PlayerStatus.PLAYING);
+                    newHand.getCards().add(oldHand.getCards().removeLast());
+                    gameService.dealCard(game1.getDeck(), oldHand.getCards());
+                    gameService.dealCard(game1.getDeck(), newHand.getCards());
+                    return Mono.just(game1);
+                });
     }
 
-    //TODO
     private Mono<Game> playDouble(Game game, PlayDTO play) {
         PlayerInGame player = game.getPlayers().get(game.getActivePlayer());
         if (player.getCards().size() > 2) {
@@ -185,7 +204,7 @@ public class PlayService {
                 }));
     }
 
-    //TODO validate player has not passed
+    //TODO validate player has not passed? changeActivePlayer should skip players that have passed
     private Mono<Game> validatePlay(Game game, PlayDTO play) {
         //Check game is not concluded
         if (game.isConcluded()) return Mono.error(new GameIsOverException("Game is over, no more plays accepted."));
