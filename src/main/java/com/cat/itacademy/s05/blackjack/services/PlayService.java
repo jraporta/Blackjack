@@ -55,7 +55,9 @@ public class PlayService {
     //TODO make winnings dependant on the properties file
     private Publisher<?> resolveBet(PlayerInGame player, boolean croupierHasBlackjack, int croupierScore) {
         int winnings = 0;
-        if (getHandValue(player.getCards()) > 21) {
+        if (player.getStatus() == PlayerStatus.SURRENDER) {
+            winnings = player.getBet() / 2;
+        }else if (getHandValue(player.getCards()) > 21) {
             player.setStatus(PlayerStatus.BUST);
         }else if (isBlackjack(player.getCards())) {
             if (croupierHasBlackjack) {
@@ -126,10 +128,15 @@ public class PlayService {
 
     //TODO
     private Mono<Game> playSurrender(Game game, PlayDTO play) {
+        PlayerInGame player = game.getPlayers().get(game.getActivePlayer());
+        if (player.getCards().size() > 2) {
+            return Mono.error(new InvalidPlayException("Surrender is only allowed immediately after the initial deal."));
+        }
+        player.setStatus(PlayerStatus.SURRENDER);
+        player.setPassed(true);
         return Mono.just(game);
     }
 
-    //TODO
     private Mono<Game> playStand(Game game, PlayDTO play) {
         PlayerInGame player = game.getPlayers().get(game.getActivePlayer());
         player.setPassed(true);
@@ -146,7 +153,6 @@ public class PlayService {
         return Mono.just(game);
     }
 
-    //TODO
     private Mono<Game> playHit(Game game, PlayDTO play) {
         PlayerInGame player = game.getPlayers().get(game.getActivePlayer());
         gameService.dealCard(game.getDeck(), player.getCards());
