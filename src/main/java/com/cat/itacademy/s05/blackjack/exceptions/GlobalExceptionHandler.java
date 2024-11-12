@@ -1,5 +1,6 @@
 package com.cat.itacademy.s05.blackjack.exceptions;
 
+import com.cat.itacademy.s05.blackjack.exceptions.custom.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -35,6 +36,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PlayerNotFoundException.class)
     public Mono<ResponseEntity<String>> handlePlayerNotFound(PlayerNotFoundException ex){
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage()));
+    }
+
+    @ExceptionHandler(GameIsOverException.class)
+    public Mono<ResponseEntity<String>> handleGameIsOver(GameIsOverException ex){
+        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()));
     }
 
 }

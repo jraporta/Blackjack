@@ -14,6 +14,8 @@ public class Game {
 
     private @Id String id;
 
+    private boolean concluded;
+    //TODO delete?
     private String description;
 
     private Croupier croupier;
@@ -26,6 +28,7 @@ public class Game {
     private Deck deck;
 
     {
+        concluded = false;
         croupier = new Croupier();
     }
 

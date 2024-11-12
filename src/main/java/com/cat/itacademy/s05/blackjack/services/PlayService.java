@@ -4,9 +4,10 @@ import com.cat.itacademy.s05.blackjack.dto.PlayDTO;
 import com.cat.itacademy.s05.blackjack.enums.Play;
 import com.cat.itacademy.s05.blackjack.enums.PlayerStatus;
 import com.cat.itacademy.s05.blackjack.enums.Rank;
-import com.cat.itacademy.s05.blackjack.exceptions.InvalidPlayException;
-import com.cat.itacademy.s05.blackjack.exceptions.NoBetPlacedException;
-import com.cat.itacademy.s05.blackjack.exceptions.NotActivePlayerException;
+import com.cat.itacademy.s05.blackjack.exceptions.custom.GameIsOverException;
+import com.cat.itacademy.s05.blackjack.exceptions.custom.InvalidPlayException;
+import com.cat.itacademy.s05.blackjack.exceptions.custom.NoBetPlacedException;
+import com.cat.itacademy.s05.blackjack.exceptions.custom.NotActivePlayerException;
 import com.cat.itacademy.s05.blackjack.model.Card;
 import com.cat.itacademy.s05.blackjack.model.Game;
 import com.cat.itacademy.s05.blackjack.model.PlayerInGame;
@@ -45,6 +46,7 @@ public class PlayService {
 
     //TODO make profit dependant on the properties file
     private void resolveBets(Game game) {
+        game.setConcluded(true);
         boolean croupierHasBlackjack = isBlackjack(game.getCroupier().getCards());
         int croupierScore = getHandValue(game.getCroupier().getCards());
         game.getPlayers().forEach(player -> {
@@ -80,7 +82,7 @@ public class PlayService {
         boolean allPassed = true;
         int i = 0;
         while (allPassed && i < game.getPlayers().size()){
-            allPassed = !game.getPlayers().get(i).isPassed();
+            allPassed = game.getPlayers().get(i).isPassed();
             i++;
         }
         return allPassed;
@@ -155,12 +157,15 @@ public class PlayService {
                     gameService.dealCard(game.getDeck(), player.getCards());
                     gameService.dealCard(game.getDeck(), game.getCroupier().getCards());
                     gameService.dealCard(game.getDeck(), game.getCroupier().getCards());
-                    return  Mono.just(game);
+                    player.setStatus(PlayerStatus.PLAYING);
+                    return  gameService.saveGame(game);
                 }));
     }
 
     //TODO validate player has not passed
     private Mono<Game> validatePlay(Game game, PlayDTO play) {
+        //Check game is not concluded
+        if (game.isConcluded()) return Mono.error(new GameIsOverException("Game is over, no more plays accepted."));
         long activePlayerId = game.getPlayers().get(game.getActivePlayer()).getId();
         //Check active player equals play player
         if (activePlayerId != play.playerId()){

@@ -1,7 +1,7 @@
 package com.cat.itacademy.s05.blackjack.services;
 
 import com.cat.itacademy.s05.blackjack.dto.PlayerDTO;
-import com.cat.itacademy.s05.blackjack.exceptions.GameNotFoundException;
+import com.cat.itacademy.s05.blackjack.exceptions.custom.GameNotFoundException;
 import com.cat.itacademy.s05.blackjack.model.*;
 import com.cat.itacademy.s05.blackjack.repositories.GameRepository;
 import org.springframework.stereotype.Service;
