@@ -11,7 +11,9 @@ import com.cat.itacademy.s05.blackjack.exceptions.custom.NotActivePlayerExceptio
 import com.cat.itacademy.s05.blackjack.model.Card;
 import com.cat.itacademy.s05.blackjack.model.Game;
 import com.cat.itacademy.s05.blackjack.model.PlayerInGame;
+import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -35,43 +37,46 @@ public class PlayService {
                 .flatMap(game -> executePlayLogic(game, play))
                 .flatMap(this::checkOutcome)
                 .flatMap(game -> {
-                    if (allPassed(game)) {
-                        resolveBets(game);
-                    } else {
-                        game.changeActivePlayer();
-                    }
+                    if (allPassed(game)) return resolveBets(game).flatMap(gameService::saveGame);
+                    game.changeActivePlayer();
                     return gameService.saveGame(game);
                 });
     }
 
-    //TODO make profit dependant on the properties file
-    private void resolveBets(Game game) {
+    private Mono<Game> resolveBets(Game game) {
         game.setConcluded(true);
         boolean croupierHasBlackjack = isBlackjack(game.getCroupier().getCards());
         int croupierScore = getHandValue(game.getCroupier().getCards());
-        game.getPlayers().forEach(player -> {
-            if (getHandValue(player.getCards()) > 21) {
-                player.setStatus(PlayerStatus.BUST);
-            }else if (isBlackjack(player.getCards())) {
-                if (croupierHasBlackjack) {
-                    player.setStatus(PlayerStatus.BLACKJACK_TIE);
-                    playerService.addMoney(player.getId(), player.getBet());
-                }else {
-                    player.setStatus(PlayerStatus.BLACKJACK);
-                    playerService.addMoney(player.getId(), (int) (player.getBet() * 1.5));
-                }
-            }else if (croupierHasBlackjack) {
-                player.setStatus(PlayerStatus.LOOSE);
-            }else if (croupierScore > 21 || getHandValue(player.getCards()) > croupierScore) {
-                player.setStatus(PlayerStatus.WIN);
-                playerService.addMoney(player.getId(), player.getBet() * 2);
-            }else if (getHandValue(player.getCards()) == croupierScore){
-                player.setStatus(PlayerStatus.TIE);
-                playerService.addMoney(player.getId(), player.getBet());
-            }else if (croupierScore > getHandValue(player.getCards())) {
-                player.setStatus(PlayerStatus.LOOSE);
+        return Flux.fromIterable(game.getPlayers())
+                .flatMap(playerInGame -> resolveBet(playerInGame, croupierHasBlackjack, croupierScore))
+                .then(Mono.defer(() -> Mono.just(game)));
+    }
+
+    //TODO make winnings dependant on the properties file
+    private Publisher<?> resolveBet(PlayerInGame player, boolean croupierHasBlackjack, int croupierScore) {
+        int winnings = 0;
+        if (getHandValue(player.getCards()) > 21) {
+            player.setStatus(PlayerStatus.BUST);
+        }else if (isBlackjack(player.getCards())) {
+            if (croupierHasBlackjack) {
+                player.setStatus(PlayerStatus.BLACKJACK_TIE);
+                winnings = player.getBet();
+            }else {
+                player.setStatus(PlayerStatus.BLACKJACK);
+                winnings = (int) (player.getBet() * (1 + 1.5));
             }
-        });
+        }else if (croupierHasBlackjack) {
+            player.setStatus(PlayerStatus.LOOSE);
+        }else if (croupierScore > 21 || getHandValue(player.getCards()) > croupierScore) {
+            player.setStatus(PlayerStatus.WIN);
+            winnings = player.getBet() * 2;
+        }else if (getHandValue(player.getCards()) == croupierScore){
+            player.setStatus(PlayerStatus.TIE);
+            winnings = player.getBet();
+        }else if (croupierScore > getHandValue(player.getCards())) {
+            player.setStatus(PlayerStatus.LOOSE);
+        }
+        return playerService.addMoney(player.getId(), winnings);
     }
 
     private boolean isBlackjack(List<Card> cards) {
@@ -126,6 +131,8 @@ public class PlayService {
 
     //TODO
     private Mono<Game> playStand(Game game, PlayDTO play) {
+        PlayerInGame player = game.getPlayers().get(game.getActivePlayer());
+        player.setPassed(true);
         return Mono.just(game);
     }
 
@@ -141,6 +148,8 @@ public class PlayService {
 
     //TODO
     private Mono<Game> playHit(Game game, PlayDTO play) {
+        PlayerInGame player = game.getPlayers().get(game.getActivePlayer());
+        gameService.dealCard(game.getDeck(), player.getCards());
         return Mono.just(game);
     }
 
@@ -158,7 +167,7 @@ public class PlayService {
                     gameService.dealCard(game.getDeck(), game.getCroupier().getCards());
                     gameService.dealCard(game.getDeck(), game.getCroupier().getCards());
                     player.setStatus(PlayerStatus.PLAYING);
-                    return  gameService.saveGame(game);
+                    return Mono.just(game);
                 }));
     }
 
