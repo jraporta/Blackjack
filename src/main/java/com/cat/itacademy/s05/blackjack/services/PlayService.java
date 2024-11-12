@@ -126,7 +126,6 @@ public class PlayService {
         };
     }
 
-    //TODO
     private Mono<Game> playSurrender(Game game, PlayDTO play) {
         PlayerInGame player = game.getPlayers().get(game.getActivePlayer());
         if (player.getCards().size() > 2) {
@@ -150,7 +149,16 @@ public class PlayService {
 
     //TODO
     private Mono<Game> playDouble(Game game, PlayDTO play) {
-        return Mono.just(game);
+        PlayerInGame player = game.getPlayers().get(game.getActivePlayer());
+        if (player.getCards().size() > 2) {
+            return Mono.error(new InvalidPlayException("Double is only allowed immediately after the initial deal."));
+        }
+        int initialBet = player.getBet();
+        player.setBet(initialBet * 2);
+        gameService.dealCard(game.getDeck(), player.getCards());
+        player.setPassed(true);
+        return playerService.subtractMoney(player.getId(), initialBet)
+                .then(Mono.defer(() -> Mono.just(game)));
     }
 
     private Mono<Game> playHit(Game game, PlayDTO play) {
