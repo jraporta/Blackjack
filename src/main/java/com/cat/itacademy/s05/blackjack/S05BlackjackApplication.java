@@ -1,5 +1,6 @@
 package com.cat.itacademy.s05.blackjack;
 
+import com.cat.itacademy.s05.blackjack.dto.GameDTOFactory;
 import com.cat.itacademy.s05.blackjack.utils.BlackjackHelper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,6 +16,11 @@ public class S05BlackjackApplication {
 	@Bean
 	public BlackjackHelper getBlackjackHelper(){
 		return new BlackjackHelper();
+	}
+
+	@Bean
+	public GameDTOFactory getGameDTOFactory(){
+		return new GameDTOFactory();
 	}
 
 }

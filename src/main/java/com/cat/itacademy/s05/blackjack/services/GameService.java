@@ -3,12 +3,9 @@ package com.cat.itacademy.s05.blackjack.services;
 import com.cat.itacademy.s05.blackjack.exceptions.custom.GameNotFoundException;
 import com.cat.itacademy.s05.blackjack.model.*;
 import com.cat.itacademy.s05.blackjack.repositories.GameRepository;
-import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class GameService {

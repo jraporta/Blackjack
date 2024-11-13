@@ -1,5 +1,6 @@
 package com.cat.itacademy.s05.blackjack.model;
 
+import com.cat.itacademy.s05.blackjack.dto.GameDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Document(collection = "games")
-public class Game {
+public class Game implements GameDTO {
 
     private @Id String id;
 
