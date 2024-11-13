@@ -7,6 +7,7 @@ import com.cat.itacademy.s05.blackjack.model.Deck;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -15,7 +16,7 @@ public class DeckService {
     @Value("${numberOfDecks}")
     private int numberOfDecks;
 
-    public void generateDeck(Deck deck){
+    public Deck generateDeck(Deck deck){
         for (int i = 0; i < numberOfDecks; i++) {
             for (Suit suit : Suit.values()) {
                 for (Rank rank : Rank.values()) {
@@ -23,10 +24,15 @@ public class DeckService {
                 }
             }
         }
+        return deck;
     }
 
-    public Card getCard(Deck deck){
+    private Card getCard(Deck deck){
         return deck.getDeck().remove(ThreadLocalRandom.current().nextInt(deck.getDeck().size()));
+    }
+
+    public void dealCard(Deck deck, List<Card> cards) {
+        cards.add(getCard(deck));
     }
 
 }

@@ -1,10 +1,12 @@
 package com.cat.itacademy.s05.blackjack.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -15,30 +17,24 @@ public class Game {
     private @Id String id;
 
     private boolean concluded;
-    //TODO delete?
-    private String description;
 
     private Croupier croupier;
 
     private List<PlayerInGame> players;
 
-    private int activePlayer = 0;
+    private int activePlayerId = 0;
 
-    //TODO jackson ignore on delivery
+    @JsonIgnore
     private Deck deck;
 
     {
         concluded = false;
         croupier = new Croupier();
+        players = new ArrayList<>();
+
     }
 
-    //TODO move to player service
-    //TODO: Skip players that have passed
-    public Game changeActivePlayer() {
-        activePlayer++;
-        if (activePlayer >= players.size()) activePlayer = 0;
-        return this;
+    public PlayerInGame getActivePlayer() {
+        return this.getPlayers().get(this.getActivePlayerId());
     }
-
-
 }

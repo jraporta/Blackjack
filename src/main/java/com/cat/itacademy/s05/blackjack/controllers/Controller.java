@@ -6,6 +6,7 @@ import com.cat.itacademy.s05.blackjack.model.Game;
 import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.services.GameService;
 import com.cat.itacademy.s05.blackjack.services.PlayService;
+import com.cat.itacademy.s05.blackjack.services.PlayerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +19,12 @@ public class Controller {
 
     private final GameService gameService;
     private final PlayService playService;
+    private final PlayerService playerService;
 
-    public Controller(GameService gameService, PlayService playService) {
+    public Controller(GameService gameService, PlayService playService, PlayerService playerService) {
         this.gameService = gameService;
         this.playService = playService;
+        this.playerService = playerService;
     }
 
     @PostMapping("/game/new")
@@ -47,7 +50,7 @@ public class Controller {
 
     @GetMapping("/ranking")
     public ResponseEntity<List<PlayerDTO>> getRanking(){
-        return ResponseEntity.ok(gameService.getRanking());
+        return ResponseEntity.ok(playerService.getRanking());
     }
 
     @PutMapping("/player/{playerId}")

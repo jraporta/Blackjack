@@ -21,19 +21,15 @@ public class PlayerInGame {
 
     private PlayerStatus status;
 
-    //TODO delete passed, use status instead
-    boolean passed;
-
     public PlayerInGame(Long id, String name) {
         this.id = id;
         this.name = name;
         this.bet = 0;
         this.cards = new ArrayList<>();
         status = PlayerStatus.PENDING_BET;
-        passed = false;
     }
 
-    public void addCard(Card card){
+    public void getCard(Card card){
         this.cards.add(card);
     }
 

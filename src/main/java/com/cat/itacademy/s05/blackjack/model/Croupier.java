@@ -16,7 +16,7 @@ public class Croupier {
         cards = new ArrayList<>();
     }
 
-    public void addCard(Card card){
+    public void getCard(Card card){
         this.cards.add(card);
     }
 
