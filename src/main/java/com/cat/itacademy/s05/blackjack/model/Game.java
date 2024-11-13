@@ -22,7 +22,7 @@ public class Game {
 
     private List<PlayerInGame> players;
 
-    private int activePlayerId = 0;
+    private int activePlayerIndex;
 
     @JsonIgnore
     private Deck deck;
@@ -31,10 +31,11 @@ public class Game {
         concluded = false;
         croupier = new Croupier();
         players = new ArrayList<>();
-
+        activePlayerIndex = 0;
     }
 
+    @JsonIgnore
     public PlayerInGame getActivePlayer() {
-        return this.getPlayers().get(this.getActivePlayerId());
+        return this.getPlayers().get(this.getActivePlayerIndex());
     }
 }

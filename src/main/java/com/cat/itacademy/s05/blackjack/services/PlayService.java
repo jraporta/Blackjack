@@ -44,7 +44,7 @@ public class PlayService {
                                 .flatMap(prizesService::resolveBets)
                                 .flatMap(gameService::saveGame);
                     }
-                    getNextActivePlayer(game);
+                    switchToNextActivePlayer(game);
                     return gameService.saveGame(game);
                 });
     }
@@ -124,18 +124,16 @@ public class PlayService {
         if (player.getCards().get(0).rank() != player.getCards().get(1).rank()) {
             return Mono.error(new InvalidPlayException("Split is only allowed if the two cards have the same rank."));
         }
+        PlayerInGame splitPlayer = new PlayerInGame(player.getId(),player.getName());
+        game.getPlayers().add(game.getActivePlayerIndex() + 1 , splitPlayer);
+        splitPlayer.setBet(player.getBet());
+        splitPlayer.setStatus(PlayerStatus.PLAYING);
+        splitPlayer.getCards().add(player.getCards().removeLast());
+        deckService.dealCard(game.getDeck(), player.getCards());
+        deckService.dealCard(game.getDeck(), splitPlayer.getCards());
+        switchToNextActivePlayer(game);
         return playerService.subtractMoney(player.getId(), player.getBet())
-                .then(Mono.defer(() -> {
-                    PlayerInGame splitPlayer = new PlayerInGame(player.getId(),player.getName());
-                    game.getPlayers().add(game.getActivePlayerId() + 1 , splitPlayer);
-                    splitPlayer.setBet(player.getBet());
-                    splitPlayer.setStatus(PlayerStatus.PLAYING);
-                    splitPlayer.getCards().add(player.getCards().removeLast());
-                    deckService.dealCard(game.getDeck(), player.getCards());
-                    deckService.dealCard(game.getDeck(), splitPlayer.getCards());
-                    getNextActivePlayer(game);
-                    return Mono.just(game);
-                }));
+                .then(Mono.defer(() -> Mono.just(game)));
     }
 
     private Mono<Game> playStand(Game game) {
@@ -178,14 +176,17 @@ public class PlayService {
         return Mono.just(game);
     }
 
-    private void getNextActivePlayer(Game game) {
-        game.setActivePlayerId(game.getActivePlayerId() + 1);
-        while (game.getActivePlayer().getStatus() == PlayerStatus.STAND
+    private void switchToNextActivePlayer(Game game) {
+        do {
+            increaseActivePlayerIndex(game);
+        } while (game.getActivePlayer().getStatus() == PlayerStatus.STAND
                 || game.getActivePlayer().getStatus() == PlayerStatus.BUST
-                || game.getActivePlayer().getStatus() == PlayerStatus.SURRENDER) {
-            game.setActivePlayerId(game.getActivePlayerId() + 1);
-            if (game.getActivePlayerId() >= game.getPlayers().size()) game.setActivePlayerId(0);
-        }
+                || game.getActivePlayer().getStatus() == PlayerStatus.SURRENDER);
+    }
+
+    private void increaseActivePlayerIndex(Game game) {
+        game.setActivePlayerIndex(game.getActivePlayerIndex() + 1);
+        if (game.getActivePlayerIndex() >= game.getPlayers().size()) game.setActivePlayerIndex(0);
     }
 
 }

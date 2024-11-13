@@ -30,4 +30,7 @@ public class BlackjackHelper {
         return getHandValue(cards) > 21;
     }
 
+    public boolean isSoft17(List<Card> cards) {
+        return getHandValue(cards) == 17 && cards.stream().anyMatch(card -> card.rank() == Rank.ACE);
+    }
 }
