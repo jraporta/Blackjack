@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class PlayerService {
 
-    PlayerRepository playerRepository;
+    private final PlayerRepository playerRepository;
 
     public PlayerService(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
@@ -45,5 +45,14 @@ public class PlayerService {
         return new ArrayList<PlayerDTO>();
     }
 
+    //TODO
+    public Mono<Player> updatePlayerName(Long playerId, String playerName) {
+        return playerRepository.findById(playerId)
+                .switchIfEmpty(Mono.error(new PlayerNotFoundException("No player found with id: " + playerId)))
+                .flatMap(player -> {
+                    player.setName(playerName);
+                    return playerRepository.save(player);
+                });
+    }
 
 }

@@ -13,12 +13,12 @@ import reactor.core.publisher.Mono;
 @Service
 public class PlayService {
 
-    GameService gameService;
-    PlayerService playerService;
-    DeckService deckService;
-    BlackjackHelper helper;
-    PrizesService prizesService;
-    CroupierService croupierService;
+    private final GameService gameService;
+    private final PlayerService playerService;
+    private final DeckService deckService;
+    private final BlackjackHelper helper;
+    private final PrizesService prizesService;
+    private final CroupierService croupierService;
 
     public PlayService(GameService gameService, PlayerService playerService, DeckService deckService,
                        BlackjackHelper helper, PrizesService prizesService, CroupierService croupierService) {

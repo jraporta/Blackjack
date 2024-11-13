@@ -12,8 +12,8 @@ import reactor.core.publisher.Mono;
 @Service
 public class PrizesService {
 
-    BlackjackHelper helper;
-    PlayerService playerService;
+    private final BlackjackHelper helper;
+    private final PlayerService playerService;
 
     public PrizesService(BlackjackHelper helper, PlayerService playerService) {
         this.helper = helper;

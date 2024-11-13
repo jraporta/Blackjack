@@ -15,8 +15,8 @@ public class CroupierService {
     @Value("${soft17ForcedDraw}")
     private boolean soft17ForcedDraw;
 
-    DeckService deckService;
-    BlackjackHelper helper;
+    private final DeckService deckService;
+    private final BlackjackHelper helper;
 
     public CroupierService(DeckService deckService, BlackjackHelper helper) {
         this.deckService = deckService;

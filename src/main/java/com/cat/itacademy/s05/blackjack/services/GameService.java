@@ -3,10 +3,12 @@ package com.cat.itacademy.s05.blackjack.services;
 import com.cat.itacademy.s05.blackjack.exceptions.custom.GameNotFoundException;
 import com.cat.itacademy.s05.blackjack.model.*;
 import com.cat.itacademy.s05.blackjack.repositories.GameRepository;
+import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class GameService {
@@ -48,6 +50,10 @@ public class GameService {
                 .switchIfEmpty(Mono.error(() -> new GameNotFoundException("No game with id: " + gameId)));
     }
 
+    public Flux<Game> getAllGames() {
+        return gameRepository.findAll();
+    }
+
     public Mono<Game> saveGame(Game game) {
         return gameRepository.save(game);
     }
@@ -56,8 +62,17 @@ public class GameService {
         return getGame(id).then(Mono.defer(() -> gameRepository.deleteById(id).then(Mono.just(id))));
     }
 
-    //TODO
-    public Player updatePlayerName(String playerId, String playerName) {
-        return new Player();
+    public Mono<Player> updatePlayerNameInGames(Player player) {
+        return getAllGames()
+                .flatMap(game -> updatePlayerNameInGame(game, player))
+                .then(Mono.just(player));
+    }
+
+    private Mono<Game> updatePlayerNameInGame(Game game, Player player) {
+        boolean isChanged = game.getPlayers().stream()
+                .filter(playerInGame -> playerInGame.getId().equals(player.getId()))
+                .peek(playerInGame -> playerInGame.setName(player.getName()))
+                .findFirst().isPresent();
+        return isChanged ? gameRepository.save(game) : Mono.empty();
     }
 }

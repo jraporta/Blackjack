@@ -46,7 +46,7 @@ public class Controller {
     @DeleteMapping("/game/{id}/delete")
     public Mono<ResponseEntity<String>> deleteGame(@PathVariable String id){
         return gameService.deleteGame(id)
-                .map(gameId -> ResponseEntity.ok("Deleted game with id: " + gameId));
+                .map(gameId -> ResponseEntity.status(HttpStatus.NO_CONTENT).build());
     }
 
     @GetMapping("/ranking")
@@ -55,7 +55,9 @@ public class Controller {
     }
 
     @PutMapping("/player/{playerId}")
-    public ResponseEntity<Player> updatePlayerName(@PathVariable String playerId, @RequestBody String playerName){
-        return ResponseEntity.ok(gameService.updatePlayerName(playerId, playerName));
+    public Mono<ResponseEntity<Player>> updatePlayerName(@PathVariable Long playerId, @RequestBody String playerName){
+        return playerService.updatePlayerName(playerId, playerName)
+                .flatMap(gameService::updatePlayerNameInGames)
+                .flatMap(player -> Mono.just(ResponseEntity.ok(player)));
     }
 }
