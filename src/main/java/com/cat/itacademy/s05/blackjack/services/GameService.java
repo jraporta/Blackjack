@@ -6,6 +6,8 @@ import com.cat.itacademy.s05.blackjack.repositories.GameRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 @Service
 public class GameService {
 
@@ -43,15 +45,19 @@ public class GameService {
 
     public Mono<Game> getGame(String gameId) {
         return gameRepository.findById(gameId)
-                .switchIfEmpty(Mono.error(() -> new GameNotFoundException("No game with id " + gameId)));
+                .switchIfEmpty(Mono.error(() -> new GameNotFoundException("No game with id: " + gameId)));
+    }
+
+    public Mono<Game> saveGame(Game game) {
+        return gameRepository.save(game);
+    }
+
+    public Mono<String> deleteGame(String id) {
+        return getGame(id).then(Mono.defer(() -> gameRepository.deleteById(id).then(Mono.just(id))));
     }
 
     //TODO
     public Player updatePlayerName(String playerId, String playerName) {
         return new Player();
-    }
-
-    public Mono<Game> saveGame(Game game) {
-        return gameRepository.save(game);
     }
 }

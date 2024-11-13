@@ -44,8 +44,9 @@ public class Controller {
     }
 
     @DeleteMapping("/game/{id}/delete")
-    public ResponseEntity<String> deleteGame(@PathVariable String id){
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    public Mono<ResponseEntity<String>> deleteGame(@PathVariable String id){
+        return gameService.deleteGame(id)
+                .map(gameId -> ResponseEntity.ok("Deleted game with id: " + gameId));
     }
 
     @GetMapping("/ranking")
