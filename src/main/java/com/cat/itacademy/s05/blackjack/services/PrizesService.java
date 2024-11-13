@@ -2,9 +2,9 @@ package com.cat.itacademy.s05.blackjack.services;
 
 import com.cat.itacademy.s05.blackjack.enums.PlayerStatus;
 import com.cat.itacademy.s05.blackjack.model.Game;
+import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.model.PlayerInGame;
 import com.cat.itacademy.s05.blackjack.utils.BlackjackHelper;
-import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -29,32 +29,45 @@ public class PrizesService {
     }
 
     //TODO make winnings dependant on the properties file
-    private Publisher<?> processWinnings(PlayerInGame player, boolean croupierHasBlackjack, int croupierScore) {
+    private Mono<Void> processWinnings(PlayerInGame player, boolean croupierHasBlackjack, int croupierScore) {
         int winnings = 0;
         if (player.getStatus() == PlayerStatus.SURRENDER) {
             winnings = player.getBet() / 2;
-        }else if (helper.isBust(player.getCards())) {
+        } else if (helper.isBust(player.getCards())) {
             player.setStatus(PlayerStatus.BUST);
-        }else if (helper.isBlackjack(player.getCards())) {
+        } else if (helper.isBlackjack(player.getCards())) {
             if (croupierHasBlackjack) {
                 player.setStatus(PlayerStatus.BLACKJACK_TIE);
                 winnings = player.getBet();
-            }else {
+            } else {
                 player.setStatus(PlayerStatus.BLACKJACK);
                 winnings = (int) (player.getBet() * (1 + 1.5));
             }
-        }else if (croupierHasBlackjack) {
+        } else if (croupierHasBlackjack) {
             player.setStatus(PlayerStatus.LOOSE);
-        }else if (croupierScore > 21 || helper.getHandValue(player.getCards()) > croupierScore) {
+        } else if (croupierScore > 21 || helper.getHandValue(player.getCards()) > croupierScore) {
             player.setStatus(PlayerStatus.WIN);
             winnings = player.getBet() * 2;
-        }else if (helper.getHandValue(player.getCards()) == croupierScore){
+        } else if (helper.getHandValue(player.getCards()) == croupierScore) {
             player.setStatus(PlayerStatus.TIE);
             winnings = player.getBet();
-        }else if (croupierScore > helper.getHandValue(player.getCards())) {
-            player.setStatus(PlayerStatus.LOOSE);
+        } else {
+            if (croupierScore > helper.getHandValue(player.getCards())) {
+                player.setStatus(PlayerStatus.LOOSE);
+            }
         }
-        return playerService.addMoney(player.getId(), winnings);
+
+        return updatePlayer(player.getId(), winnings).then(Mono.empty());
+
+    }
+
+    private Mono<Player> updatePlayer(long playerId, int winnings) {
+        return playerService.getPlayerById(playerId)
+                .flatMap(player -> {
+                    player.setGamesPlayed(player.getGamesPlayed() + 1);
+                    player.setMoney(player.getMoney() + winnings);
+                    return playerService.savePlayer(player);
+                });
     }
 
 }

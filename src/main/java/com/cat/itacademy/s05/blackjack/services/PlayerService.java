@@ -5,6 +5,7 @@ import com.cat.itacademy.s05.blackjack.exceptions.custom.PlayerNotFoundException
 import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.repositories.PlayerRepository;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -21,6 +22,14 @@ public class PlayerService {
 
     public Mono<Player> getPlayer(String playerName) {
         return playerRepository.findByName(playerName);
+    }
+
+    public Mono<Player> getPlayerById(Long playerId) {
+        return playerRepository.findById(playerId);
+    }
+
+    public Mono<Player> savePlayer(Player player) {
+        return playerRepository.save(player);
     }
 
     public Mono<Player> createPlayer(String playerName) {
@@ -41,17 +50,16 @@ public class PlayerService {
     }
 
     //TODO
-    public List<PlayerDTO> getRanking() {
-        return new ArrayList<PlayerDTO>();
+    public Flux<Player> getRanking() {
+        return playerRepository.findAllOrderByMoneyDesc();
     }
 
-    //TODO
     public Mono<Player> updatePlayerName(Long playerId, String playerName) {
         return playerRepository.findById(playerId)
                 .switchIfEmpty(Mono.error(new PlayerNotFoundException("No player found with id: " + playerId)))
                 .flatMap(player -> {
                     player.setName(playerName);
-                    return playerRepository.save(player);
+                    return savePlayer(player);
                 });
     }
 
