@@ -84,6 +84,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>blackjack</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

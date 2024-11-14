@@ -10,8 +10,9 @@ import com.cat.itacademy.s05.blackjack.services.PlayerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @RestController
 public class Controller {
@@ -53,8 +54,9 @@ public class Controller {
     }
 
     @GetMapping("/ranking")
-    public Flux<Player> getRanking(){
-        return playerService.getRanking();
+    public Mono<ResponseEntity<List<Player>>> getRanking(){
+        return playerService.getRanking()
+                .collectList().flatMap(players -> Mono.just(ResponseEntity.ok(players)));
     }
 
     @PutMapping("/player/{playerId}")
