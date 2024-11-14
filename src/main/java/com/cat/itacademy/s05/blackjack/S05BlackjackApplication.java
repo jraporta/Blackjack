@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class S05BlackjackApplication {
 
+
 	public static void main(String[] args) {
 		SpringApplication.run(S05BlackjackApplication.class, args);
 	}
