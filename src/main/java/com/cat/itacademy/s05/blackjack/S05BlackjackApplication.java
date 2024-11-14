@@ -1,6 +1,6 @@
 package com.cat.itacademy.s05.blackjack;
 
-import com.cat.itacademy.s05.blackjack.dto.GameDTOFactory;
+import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTOFactory;
 import com.cat.itacademy.s05.blackjack.utils.BlackjackHelper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

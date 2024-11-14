@@ -1,15 +1,11 @@
 package com.cat.itacademy.s05.blackjack.services;
 
-import com.cat.itacademy.s05.blackjack.dto.PlayerDTO;
 import com.cat.itacademy.s05.blackjack.exceptions.custom.PlayerNotFoundException;
 import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.repositories.PlayerRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class PlayerService {

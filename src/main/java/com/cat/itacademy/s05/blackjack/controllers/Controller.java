@@ -1,7 +1,7 @@
 package com.cat.itacademy.s05.blackjack.controllers;
 
-import com.cat.itacademy.s05.blackjack.dto.GameDTO;
-import com.cat.itacademy.s05.blackjack.dto.GameDTOFactory;
+import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTO;
+import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTOFactory;
 import com.cat.itacademy.s05.blackjack.dto.PlayDTO;
 import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.services.GameService;
