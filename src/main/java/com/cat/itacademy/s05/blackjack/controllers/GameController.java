@@ -3,28 +3,23 @@ package com.cat.itacademy.s05.blackjack.controllers;
 import com.cat.itacademy.s05.blackjack.dto.GameDTO;
 import com.cat.itacademy.s05.blackjack.dto.GameDTOFactory;
 import com.cat.itacademy.s05.blackjack.dto.PlayDTO;
-import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.services.GameService;
 import com.cat.itacademy.s05.blackjack.services.PlayService;
-import com.cat.itacademy.s05.blackjack.services.PlayerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-public class Controller {
+public class GameController {
 
     private final GameService gameService;
     private final PlayService playService;
-    private final PlayerService playerService;
     private final GameDTOFactory gameDTOFactory;
 
-    public Controller(GameService gameService, PlayService playService, PlayerService playerService, GameDTOFactory gameDTOFactory) {
+    public GameController(GameService gameService, PlayService playService, GameDTOFactory gameDTOFactory) {
         this.gameService = gameService;
         this.playService = playService;
-        this.playerService = playerService;
         this.gameDTOFactory = gameDTOFactory;
     }
 
@@ -52,15 +47,4 @@ public class Controller {
                 .map(gameId -> ResponseEntity.status(HttpStatus.NO_CONTENT).build());
     }
 
-    @GetMapping("/ranking")
-    public Flux<Player> getRanking(){
-        return playerService.getRanking();
-    }
-
-    @PutMapping("/player/{playerId}")
-    public Mono<ResponseEntity<Player>> updatePlayerName(@PathVariable Long playerId, @RequestBody String playerName){
-        return playerService.updatePlayerName(playerId, playerName)
-                .flatMap(gameService::updatePlayerNameInGames)
-                .flatMap(player -> Mono.just(ResponseEntity.ok(player)));
-    }
 }
