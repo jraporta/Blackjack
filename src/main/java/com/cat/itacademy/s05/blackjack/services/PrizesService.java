@@ -1,16 +1,21 @@
 package com.cat.itacademy.s05.blackjack.services;
 
+import com.cat.itacademy.s05.blackjack.enums.BlackjackPayout;
 import com.cat.itacademy.s05.blackjack.enums.PlayerStatus;
 import com.cat.itacademy.s05.blackjack.model.Game;
 import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.model.PlayerInGame;
 import com.cat.itacademy.s05.blackjack.utils.BlackjackHelper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
 public class PrizesService {
+
+    @Value("${blackjackPayout}")
+    private BlackjackPayout blackjackPayout;
 
     private final BlackjackHelper helper;
     private final PlayerService playerService;
@@ -41,7 +46,7 @@ public class PrizesService {
                 winnings = player.getBet();
             } else {
                 player.setStatus(PlayerStatus.BLACKJACK);
-                winnings = (int) (player.getBet() * (1 + 1.5));
+                winnings = (int) (player.getBet() * (1 + blackjackPayout.getPayout()));
             }
         } else if (croupierHasBlackjack) {
             player.setStatus(PlayerStatus.LOOSE);
@@ -56,9 +61,7 @@ public class PrizesService {
                 player.setStatus(PlayerStatus.LOOSE);
             }
         }
-
         return updatePlayer(player.getId(), winnings).then(Mono.empty());
-
     }
 
     private Mono<Player> updatePlayer(long playerId, int winnings) {

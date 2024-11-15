@@ -1,66 +1,24 @@
 package com.cat.itacademy.s05.blackjack.services;
 
-import com.cat.itacademy.s05.blackjack.dto.PlayerDTO;
-import com.cat.itacademy.s05.blackjack.exceptions.custom.PlayerNotFoundException;
 import com.cat.itacademy.s05.blackjack.model.Player;
-import com.cat.itacademy.s05.blackjack.repositories.PlayerRepository;
-import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Service
-public class PlayerService {
+public interface PlayerService {
+    Mono<Player> getPlayer(String playerName);
 
-    private final PlayerRepository playerRepository;
+    Mono<Player> getPlayerById(Long playerId);
 
-    public PlayerService(PlayerRepository playerRepository) {
-        this.playerRepository = playerRepository;
-    }
+    Mono<Player> savePlayer(Player player);
 
-    public Mono<Player> getPlayer(String playerName) {
-        return playerRepository.findByName(playerName);
-    }
+    Mono<Player> createPlayer(String playerName);
 
-    public Mono<Player> getPlayerById(Long playerId) {
-        return playerRepository.findById(playerId);
-    }
+    Mono<Player> addMoney(Long playerId, int money);
 
-    public Mono<Player> savePlayer(Player player) {
-        return playerRepository.save(player);
-    }
+    Mono<Player> subtractMoney(Long playerId, int money);
 
-    public Mono<Player> createPlayer(String playerName) {
-        return playerRepository.save(new Player(playerName));
-    }
+    Mono<List<Player>> getRanking();
 
-    public Mono<Player> addMoney(Long playerId, int money) {
-        return playerRepository.findById(playerId)
-                .flatMap(player -> {
-                    player.setMoney(player.getMoney() + money);
-                    return playerRepository.save(player);
-                })
-                .switchIfEmpty(Mono.error(new PlayerNotFoundException("Player with id " + playerId + " not found.")));
-    }
-
-    public Mono<Player> subtractMoney(Long playerId, int money) {
-        return addMoney(playerId, -money);
-    }
-
-    //TODO
-    public Flux<Player> getRanking() {
-        return playerRepository.findAllOrderByMoneyDesc();
-    }
-
-    public Mono<Player> updatePlayerName(Long playerId, String playerName) {
-        return playerRepository.findById(playerId)
-                .switchIfEmpty(Mono.error(new PlayerNotFoundException("No player found with id: " + playerId)))
-                .flatMap(player -> {
-                    player.setName(playerName);
-                    return savePlayer(player);
-                });
-    }
-
+    Mono<Player> updatePlayerName(Long playerId, String playerName);
 }

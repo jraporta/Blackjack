@@ -13,39 +13,26 @@ import reactor.core.publisher.Mono;
 @Service
 public class PlayService {
 
-    private final GameService gameService;
     private final PlayerService playerService;
     private final DeckService deckService;
     private final BlackjackHelper helper;
-    private final PrizesService prizesService;
-    private final CroupierService croupierService;
 
-    public PlayService(GameService gameService, PlayerService playerService, DeckService deckService,
-                       BlackjackHelper helper, PrizesService prizesService, CroupierService croupierService) {
-        this.gameService = gameService;
+    public PlayService(PlayerService playerService, DeckService deckService, BlackjackHelper helper) {
         this.playerService = playerService;
         this.deckService = deckService;
         this.helper = helper;
-        this.prizesService = prizesService;
-        this.croupierService = croupierService;
     }
 
-    public Mono<Game> executePlay(String gameId, PlayDTO play) {
-        return gameService.getGame(gameId)
-                .flatMap(game -> validatePlay(game, play))
+    public Mono<Game> executePlay(Game game1, PlayDTO play) {
+        return validatePlay(game1, play)
                 .flatMap(game -> executePlayLogic(game, play))
                 .flatMap(game -> {
-                    if (allWaitingForDeal(game)) {
-                        return dealCards(game).flatMap(gameService::saveGame);
-                    }
                     if (allPassed(game)) {
                         game.setConcluded(true);
-                        return croupierService.resolveCroupierHand(game)
-                                .flatMap(prizesService::resolveBets)
-                                .flatMap(gameService::saveGame);
+                    }else {
+                        switchToNextActivePlayer(game);
                     }
-                    switchToNextActivePlayer(game);
-                    return gameService.saveGame(game);
+                    return Mono.just(game);
                 });
     }
 
@@ -84,7 +71,12 @@ public class PlayService {
         player.setBet(bet);
         player.setStatus(PlayerStatus.WAITING_FOR_DEAL);
         return playerService.subtractMoney(player.getId(), player.getBet())
-                .then(Mono.defer(() -> Mono.just(game)));
+                .flatMap(unused -> {
+                    if (allWaitingForDeal(game)) {
+                        return dealCards(game);
+                    }
+                    return Mono.just(game);
+                });
     }
 
     private Mono<Game> playHit(Game game) {
