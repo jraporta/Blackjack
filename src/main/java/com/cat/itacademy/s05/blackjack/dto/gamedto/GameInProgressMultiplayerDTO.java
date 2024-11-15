@@ -1,6 +1,6 @@
-package com.cat.itacademy.s05.blackjack.dto;
+package com.cat.itacademy.s05.blackjack.dto.gamedto;
 
-import com.cat.itacademy.s05.blackjack.model.Croupier;
+import com.cat.itacademy.s05.blackjack.dto.CroupierDTO;
 import com.cat.itacademy.s05.blackjack.model.Game;
 import com.cat.itacademy.s05.blackjack.model.PlayerInGame;
 import lombok.Getter;
@@ -12,7 +12,7 @@ public class GameInProgressMultiplayerDTO implements GameDTO {
 
     private String gameId;
 
-    private Croupier croupier;
+    private CroupierDTO croupier;
 
     private List<PlayerInGame> players;
 
@@ -20,10 +20,7 @@ public class GameInProgressMultiplayerDTO implements GameDTO {
 
     public GameInProgressMultiplayerDTO(Game game) {
         this.gameId = game.getId();
-        this.croupier = game.getCroupier();
-        if (this.croupier.getCards().size() == 2) {
-            this.croupier.getCards().removeLast();
-        }
+        this.croupier = new CroupierDTO(game.getCroupier());
         this.players = game.getPlayers();
         this.activePlayerIndex = game.getActivePlayerIndex();
     }

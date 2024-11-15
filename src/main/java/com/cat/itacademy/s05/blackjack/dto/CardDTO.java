@@ -1,4 +1,4 @@
 package com.cat.itacademy.s05.blackjack.dto;
 
-public class PlayerDTO {
+public interface CardDTO {
 }

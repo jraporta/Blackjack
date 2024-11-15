@@ -30,9 +30,6 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(ex.getMessage()));
     }
 
-    //TODO create exception for checkOutcome, bust and blackjack¿?
-
-
     @ExceptionHandler(PlayerNotFoundException.class)
     public Mono<ResponseEntity<String>> handlePlayerNotFound(PlayerNotFoundException ex){
         return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage()));
