@@ -15,11 +15,6 @@ public class S05BlackjackApplication {
 	}
 
 	@Bean
-	public BlackjackHelper getBlackjackHelper(){
-		return new BlackjackHelper();
-	}
-
-	@Bean
 	public GameDTOFactory getGameDTOFactory(){
 		return new GameDTOFactory();
 	}

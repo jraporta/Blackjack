@@ -1,6 +1,8 @@
 package com.cat.itacademy.s05.blackjack.exceptions;
 
 import com.cat.itacademy.s05.blackjack.exceptions.custom.*;
+import com.cat.itacademy.s05.blackjack.exceptions.custom.IllegalPlayerStatusException;
+import com.cat.itacademy.s05.blackjack.exceptions.custom.IllegalGameStateException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -30,14 +32,14 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(ex.getMessage()));
     }
 
-    @ExceptionHandler(PlayerNotFoundException.class)
-    public Mono<ResponseEntity<String>> handlePlayerNotFound(PlayerNotFoundException ex){
-        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage()));
-    }
-
     @ExceptionHandler(GameIsOverException.class)
     public Mono<ResponseEntity<String>> handleGameIsOver(GameIsOverException ex){
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()));
+    }
+
+    @ExceptionHandler({IllegalPlayerStatusException.class, IllegalGameStateException.class, PlayerNotFoundException.class})
+    public Mono<ResponseEntity<String>> handleUnexpectedExceptions(RuntimeException ex){
+        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage()));
     }
 
 }

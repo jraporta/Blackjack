@@ -1,11 +1,13 @@
 package com.cat.itacademy.s05.blackjack.services;
 
-import com.cat.itacademy.s05.blackjack.dto.GameDTO;
-import com.cat.itacademy.s05.blackjack.dto.GameDTOFactory;
+
 import com.cat.itacademy.s05.blackjack.dto.PlayDTO;
+import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTO;
+import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTOFactory;
 import com.cat.itacademy.s05.blackjack.exceptions.custom.GameNotFoundException;
 import com.cat.itacademy.s05.blackjack.model.*;
 import com.cat.itacademy.s05.blackjack.repositories.GameRepository;
+import com.cat.itacademy.s05.blackjack.utils.BlackjackHelper;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -18,19 +20,21 @@ public class GameServiceImpl implements GameService {
     private final PlayService playService;
     private final DeckService deckService;
     private final GameDTOFactory gameDTOFactory;
-    private final PrizesService prizesService;
+    private final CleanUpService cleanUpService;
     private final CroupierService croupierService;
+    private final BlackjackHelper blackjackHelper;
 
     public GameServiceImpl(GameRepository gameRepository, PlayerServiceImpl playerService, PlayService playService,
-                           DeckService deckService, GameDTOFactory gameDTOFactory, PrizesService prizesService,
-                           CroupierService croupierService) {
+                           DeckService deckService, GameDTOFactory gameDTOFactory, CleanUpService cleanUpService,
+                           CroupierService croupierService, BlackjackHelper blackjackHelper) {
         this.gameRepository = gameRepository;
         this.playerService = playerService;
         this.playService = playService;
         this.deckService = deckService;
         this.gameDTOFactory = gameDTOFactory;
-        this.prizesService = prizesService;
+        this.cleanUpService = cleanUpService;
         this.croupierService = croupierService;
+        this.blackjackHelper = blackjackHelper;
     }
 
     @Override
@@ -100,12 +104,22 @@ public class GameServiceImpl implements GameService {
                 .flatMap(game -> {
                     if (game.isConcluded()) {
                         return croupierService.resolveCroupierHand(game)
-                                .flatMap(prizesService::resolveBets);
+                                .flatMap(this::executeCleanUp);
                     }
                     return Mono.just(game);
                 })
                 .flatMap(gameRepository::save)
                 .flatMap(game -> Mono.empty());
+    }
+
+    private Mono<Game> executeCleanUp(Game game) {
+        boolean croupierHasBlackjack = blackjackHelper.isBlackjack(game.getCroupier().getCards());
+        int croupierScore = blackjackHelper.getHandValue(game.getCroupier().getCards());
+        return Flux.fromIterable(game.getPlayers())
+                .flatMap(playerInGame -> cleanUpService.determinePlayerFinalStatus(playerInGame, croupierHasBlackjack,
+                        croupierScore))
+                .flatMap(cleanUpService::resolveBet)
+                .then(Mono.defer(() -> Mono.just(game)));
     }
 
     private Mono<Game> updatePlayerNameInGame(Game game, Player player) {

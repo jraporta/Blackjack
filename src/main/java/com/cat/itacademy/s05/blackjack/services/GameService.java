@@ -1,7 +1,6 @@
 package com.cat.itacademy.s05.blackjack.services;
-
-import com.cat.itacademy.s05.blackjack.dto.GameDTO;
 import com.cat.itacademy.s05.blackjack.dto.PlayDTO;
+import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTO;
 import com.cat.itacademy.s05.blackjack.model.Game;
 import com.cat.itacademy.s05.blackjack.model.Player;
 import reactor.core.publisher.Mono;
