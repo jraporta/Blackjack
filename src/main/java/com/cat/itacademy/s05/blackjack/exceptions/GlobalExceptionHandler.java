@@ -17,23 +17,8 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage()));
     }
 
-    @ExceptionHandler(NotActivePlayerException.class)
-    public Mono<ResponseEntity<String>> handleNotActivePlayer(NotActivePlayerException ex){
-        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()));
-    }
-
-    @ExceptionHandler(NoBetPlacedException.class)
-    public Mono<ResponseEntity<String>> handleNoBetPlaced(NoBetPlacedException ex){
-        return Mono.just(ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(ex.getMessage()));
-    }
-
     @ExceptionHandler(InvalidPlayException.class)
     public Mono<ResponseEntity<String>> handleInvalidPlay(InvalidPlayException ex){
-        return Mono.just(ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(ex.getMessage()));
-    }
-
-    @ExceptionHandler(GameIsOverException.class)
-    public Mono<ResponseEntity<String>> handleGameIsOver(GameIsOverException ex){
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()));
     }
 

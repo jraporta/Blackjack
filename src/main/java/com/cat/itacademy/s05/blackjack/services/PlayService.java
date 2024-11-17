@@ -38,15 +38,19 @@ public class PlayService {
 
     private Mono<Game> validatePlay(Game game, PlayDTO play) {
         //Check game is not concluded
-        if (game.isConcluded()) return Mono.error(new GameIsOverException("Game is over, no more plays accepted."));
+        if (game.isConcluded()) return Mono.error(new InvalidPlayException("Game is over, no more plays accepted."));
         PlayerInGame activePlayer = game.getActivePlayer();
         //Check active player equals play player
         if (!activePlayer.getId().equals(play.playerId())){
-            return Mono.error(new NotActivePlayerException("It's the turn of the player with id: " + activePlayer.getId()));
+            return Mono.error(new InvalidPlayException("It's the turn of the player with id: " + activePlayer.getId()));
         }
-        //Check player has a bet
-        if (activePlayer.getStatus() == PlayerStatus.PENDING_BET && play.play() != Play.INITIAL_BET){
-            return Mono.error(new NoBetPlacedException("Player has no bet. First play must be 'INITIAL_BET'."));
+        //Check player has a bet or play is INITIAL_BET
+        if (activePlayer.getStatus().equals(PlayerStatus.PENDING_BET) && !play.play().equals(Play.INITIAL_BET)){
+            return Mono.error(new InvalidPlayException("Player has no bet. First play must be 'INITIAL_BET'."));
+        }
+        //Check play contains valid bet if play is INITIAL_BET
+        if (play.play().equals(Play.INITIAL_BET) && play.bet() == 0) {
+            return Mono.error(new InvalidPlayException("Initial bet play must have a valid bet."));
         }
         return Mono.just(game);
     }
