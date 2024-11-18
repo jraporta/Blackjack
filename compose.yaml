@@ -1,0 +1,31 @@
+services:
+  blackjack:
+    container_name: blackjack-test
+    build:
+      dockerfile: dockerfile
+    image: blackjack:latest
+    ports:
+      - 8080:8080
+    networks:
+      - my-blackjack-network
+  mysql:
+    container_name: mysql-test
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+    ports:
+      - 3307:3306
+    networks:
+      - my-blackjack-network
+  mongo:
+    image: mongo:latest
+    command: --serviceExecutor adaptive
+    ports:
+      - 27018:27017
+    networks:
+      - my-blackjack-network
+networks:
+  my-blackjack-network:
+    driver: bridge
+

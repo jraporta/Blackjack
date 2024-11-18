@@ -17,6 +17,8 @@ public class MySqlDatabaseConfig {
     @Bean
     public Mono<Void> initializeDatabase() {
         return databaseClient.sql("""
+                CREATE SCHEMA IF NOT EXISTS `s5_blackjack` DEFAULT CHARACTER SET utf8mb4 ;
+                USE `s5_blackjack` ;
                 CREATE TABLE IF NOT EXISTS `s5_blackjack`.`player` (
                   `id` INT NOT NULL AUTO_INCREMENT,
                   `name` VARCHAR(45) NOT NULL,
