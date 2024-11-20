@@ -1,30 +1,40 @@
 services:
   blackjack:
-    container_name: blackjack-test
+    container_name: blackjack-container
     build:
       dockerfile: dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
     image: blackjack:latest
     ports:
-      - 8080:8080
+      - 8081:8080
     networks:
       - my-blackjack-network
   mysql:
-    container_name: mysql-test
+    container_name: mysql-container
     image: mysql:latest
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 1234
-    ports:
-      - 3307:3306
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: s5_blackjack
     networks:
       - my-blackjack-network
+    healthcheck:
+      test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-proot' ]
+      timeout: 5s
+      retries: 10
   mongo:
+    container_name: mongo-container
     image: mongo:latest
-    command: --serviceExecutor adaptive
-    ports:
-      - 27018:27017
     networks:
       - my-blackjack-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh
+      timeout: 5s
+      retries: 10
 networks:
   my-blackjack-network:
     driver: bridge
