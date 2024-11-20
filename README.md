@@ -10,36 +10,34 @@ Create a reactive Spring Boot API for a Blackjack game.
 - Maven
 - Postman
 - Swagger
+- Docker
+- Docker Compose
 
 ## 📋Requirements
 
-- JDK 21
-- Maven
-- MongoDB
-- MySQL
+- Docker Desktop (for Windows and macOS) or Docker Engine (for Linux) must be installed.
 
 ## 🛠️Installation
 
-- Install MySQL and create a database named `s5_blackjack`, plus execute the following script to create the tables:
-```
-CREATE TABLE IF NOT EXISTS `s5_blackjack`.`player` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45) NOT NULL,
-  `money` INT NOT NULL DEFAULT 0,
-  `games_played` INT NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE)
-ENGINE = InnoDB;
-```
-- Install MongoDB.
-- If needed, launch MongoDB as a service by launching it in a console window by running the command: `mongod`
+- Install Docker according to you system features.
 
 ## ▶️Execution
 
 ### Run the project
-- Open a command prompt window.
-- Navigate to the project’s root directory.
-- Execute the following command to start the application: `mvn spring-boot:run`
+
+- Download the `compose.yaml` file.
+- Make sure **Docker** is running in the local machine.
+- Open a command prompt window and navigate to the project directory where the `compose.yaml` file is located.
+- Execute the following command: `docker-compose up --build`
+- Docker will automatically pull the images from docker hub, build them and create and start the containers as specified in the `compose.yaml` file.
+- The service will be available at `http://localhost:8081`.
+- To stop the running containers press `Ctrl+C` in the terminal were the `docker-compose` command is running or execute the command `docker-compose down`.
+
+Alternatively, you can build the docker image locally instead of pulling it from Docker Hub by following these steps:
+- clone the github repository in your local machine running the command `https://github.com/jraporta/Blackjack.git`
+- Build the Docker image locally by executing the command `docker build --tag=jraporta/blackjack:latest .`
+- Start the services as defined in `docker-compose.yaml` by executing the command `docker-compose up --build`
+- Once the containers are up, follow the instructions in the above section to interact with the service.
 
 ## 🌐Deployment
 
