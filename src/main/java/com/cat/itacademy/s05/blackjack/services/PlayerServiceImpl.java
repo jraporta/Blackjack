@@ -1,5 +1,6 @@
 package com.cat.itacademy.s05.blackjack.services;
 
+import com.cat.itacademy.s05.blackjack.exceptions.custom.IllegalGameStateException;
 import com.cat.itacademy.s05.blackjack.exceptions.custom.PlayerNotFoundException;
 import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.repositories.PlayerRepository;
@@ -44,7 +45,7 @@ public class PlayerServiceImpl implements PlayerService {
                     player.setMoney(player.getMoney() + money);
                     return playerRepository.save(player);
                 })
-                .switchIfEmpty(Mono.error(new PlayerNotFoundException("Player with id " + playerId + " not found.")));
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Player with id " + playerId + " not found.")));
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.cat.itacademy.s05.blackjack.controllers;
 
+import com.cat.itacademy.s05.blackjack.dto.gamedto.GameCompletedDTO;
 import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTO;
 import com.cat.itacademy.s05.blackjack.dto.PlayDTO;
+import com.cat.itacademy.s05.blackjack.dto.gamedto.GameInProgressDTO;
 import com.cat.itacademy.s05.blackjack.services.GameService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -47,7 +49,7 @@ public class GameController {
                     content = @Content(
                             mediaType = "text/plain",
                             examples = @ExampleObject(
-                                    name = "Possible user name",
+                                    name = "Player name",
                                     value = "John Doe"
                             )))
             @RequestBody String playerName){
@@ -59,7 +61,10 @@ public class GameController {
             summary = "Get details of a game",
             description = "Get the details of a blackjack game.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Successful operation"),
+                    @ApiResponse(responseCode = "200", description = "Game found", content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {GameCompletedDTO.class, GameInProgressDTO.class})
+                    )),
                     @ApiResponse(responseCode = "404", description = "Game not found")
             }
     )
@@ -75,7 +80,10 @@ public class GameController {
             summary = "Make a play",
             description = "Make a play in an existing blackjack game.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Successful operation"),
+                    @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(oneOf = {GameCompletedDTO.class, GameInProgressDTO.class})
+                    )),
                     @ApiResponse(responseCode = "404", description = "Invalid play")
             }
     )
@@ -96,8 +104,18 @@ public class GameController {
                 .map(ResponseEntity::ok);
     }
 
+    @Operation(
+            summary = "Delete a game",
+            description = "Delete a blackjack game.",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Game deleted"),
+                    @ApiResponse(responseCode = "404", description = "Game not found")
+            }
+    )
     @DeleteMapping("/game/{id}/delete")
-    public Mono<ResponseEntity<Void>> deleteGame(@PathVariable String id){
+    public Mono<ResponseEntity<Void>> deleteGame(
+            @Parameter(description = "Id of the game to delete", example = "673b4d48e52179685109a141")
+            @PathVariable String id){
         return gameService.deleteGame(id)
                 .then(Mono.just(ResponseEntity.status(HttpStatus.NO_CONTENT).build()));
     }

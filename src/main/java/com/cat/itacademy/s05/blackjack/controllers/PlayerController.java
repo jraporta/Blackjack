@@ -1,8 +1,16 @@
 package com.cat.itacademy.s05.blackjack.controllers;
 
+import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTO;
 import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.services.GameService;
 import com.cat.itacademy.s05.blackjack.services.PlayerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,14 +30,47 @@ public class PlayerController {
         this.gameService = gameService;
     }
 
+    @Operation(
+            summary = "Get ranking",
+            description = "Get a ranking of the players based on their performance in the blackjack games.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Get list of players", content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = Player.class))
+                    ))
+            }
+    )
     @GetMapping("/ranking")
     public Mono<ResponseEntity<List<Player>>> getRanking(){
         return playerService.getRanking().
                 map(ResponseEntity::ok);
     }
 
+    @Operation(
+            summary = "Change a player's name",
+            description = "Change a player's name in the players database and throughout all the existing games.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Name is updated", content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Player.class)
+                    )),
+                    @ApiResponse(responseCode = "404", description = "Player not found")
+            }
+    )
     @PutMapping("/player/{playerId}")
-    public Mono<ResponseEntity<Player>> updatePlayerName(@PathVariable Long playerId, @RequestBody String playerName){
+    public Mono<ResponseEntity<Player>> updatePlayerName(
+            @Parameter(description = "Id of the player to update", example = "1234")
+            @PathVariable Long playerId,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "New name of the player",
+                    required = true,
+                    content = @Content(
+                            mediaType = "text/plain",
+                            examples = @ExampleObject(
+                                    name = "New player name",
+                                    value = "John Doe"
+                            )))
+            @RequestBody String playerName){
         return playerService.updatePlayerName(playerId, playerName)
                 .flatMap(gameService::updatePlayerNameInGames)
                 .map(ResponseEntity::ok);

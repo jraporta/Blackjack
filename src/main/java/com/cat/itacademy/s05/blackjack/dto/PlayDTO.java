@@ -3,7 +3,7 @@ package com.cat.itacademy.s05.blackjack.dto;
 import com.cat.itacademy.s05.blackjack.enums.Play;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Data transfer object representing a play")
+@Schema(name = "Play", description = "Data object representing a play")
 public record PlayDTO(
         @Schema(description = "Id of the player doing the play", example = "1234")
         Long playerId,

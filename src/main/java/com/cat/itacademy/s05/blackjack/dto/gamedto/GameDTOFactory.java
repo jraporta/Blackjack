@@ -6,8 +6,7 @@ public class GameDTOFactory {
 
     public GameDTO getGameDTO(Game game) {
         if (game.isConcluded()) return new GameCompletedDTO(game);
-        if (game.getPlayers().size() == 1) return new GameInProgressDTO(game);
-        return new GameInProgressMultiplayerDTO(game);
+        return new GameInProgressDTO(game);
     }
 
 }
