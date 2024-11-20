@@ -1,0 +1,48 @@
+# Ignore build directories
+target/*
+!target/blackjack.jar
+build/
+
+# Ignore IDE specific files (e.g., IntelliJ, Eclipse, VS Code)
+.idea/
+.vscode/
+*.iml
+*.project
+*.classpath
+
+# Ignore Maven or Gradle files (for specific environments, adjust accordingly)
+*.log
+*.bak
+
+# Ignore system files (macOS, Linux, Windows, etc.)
+.DS_Store
+Thumbs.db
+
+# Ignore local environment variables or config files (don't include sensitive data)
+.env
+*.properties
+
+# Ignore git and version control metadata
+.git/
+.gitignore
+
+# Ignore Dockerfile itself (if not required in the image)
+Dockerfile
+
+# Ignore Java bytecode files
+*.class
+
+# Ignore Maven wrapper files (optional based on your setup)
+.mvn/
+mvnw
+mvnw.cmd
+
+# Ignore temporary or backup files
+*~
+*.swp
+
+# Ignore test reports or coverage folders
+test-logs/
+*.xml
+*.log
+
