@@ -29,8 +29,8 @@ public class GameController {
 
     @Operation(
             summary = "Create a game",
-            description = "Creates a new Blackjack game for the user specified in the request body. If a user with " +
-                    "the given name exists, it is retrieved from the database; otherwise, a new user is created.",
+            description = "Creates a new Blackjack game with the player specified in the request body.\n" +
+                    "If a player with that name exists, it is retrieved from the database; otherwise, a new player is created.",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Game created", content = @Content(
                             mediaType = "text/plain",
@@ -55,6 +55,39 @@ public class GameController {
             @RequestBody String playerName){
         return gameService.createGame(playerName)
                 .map(gameId -> ResponseEntity.status(HttpStatus.CREATED).body("Created game with id: " + gameId));
+    }
+
+    @Operation(
+            summary = "Add player to an existing game",
+            description = "Given the id of an existing but not started Blackjack game, the player specified in the request body is added to the game.\n" +
+                    "If there is a player with that name, it is retrieved from the database; otherwise, a new player is created.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Player added", content = @Content(
+                            mediaType = "text/plain",
+                            examples = @ExampleObject(
+                                    name = "example response",
+                                    value = "Player joined game with id: 673b4e77d181ca65a6f436b9"
+                            ))),
+                    @ApiResponse(responseCode = "400", description = "No name provided"),
+                    @ApiResponse(responseCode = "404", description = "Game not found")
+            }
+    )
+    @PostMapping("/game/{id}/join")
+    public Mono<ResponseEntity<String>> joinGame(
+            @Parameter(description = "Id of the game to search for", example = "673b4d48e52179685109a141")
+            @PathVariable String id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Name of the player to include in the game",
+                    required = true,
+                    content = @Content(
+                            mediaType = "text/plain",
+                            examples = @ExampleObject(
+                                    name = "Player name",
+                                    value = "John Doe"
+                            )))
+            @RequestBody String playerName){
+        return gameService.joinGame(id, playerName)
+                .map(gameId -> ResponseEntity.ok("Player joined game with id: " + gameId));
     }
 
     @Operation(

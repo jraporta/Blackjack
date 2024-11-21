@@ -5,6 +5,8 @@ import com.cat.itacademy.s05.blackjack.model.Game;
 import com.cat.itacademy.s05.blackjack.model.Player;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 public interface GameService {
     Mono<String> createGame(String playerName);
 
@@ -19,4 +21,6 @@ public interface GameService {
     Mono<Player> updatePlayerNameInGames(Player player);
 
     Mono<Void> executePlay(String game, PlayDTO play);
+
+    Mono<String> joinGame(String gameId, String playerName);
 }

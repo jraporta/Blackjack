@@ -112,6 +112,14 @@ public class GameServiceImpl implements GameService {
                 .flatMap(game -> Mono.empty());
     }
 
+    @Override
+    public Mono<String> joinGame(String gameId, String playerName) {
+        return getGame(gameId)
+                .flatMap(game -> addPlayer(game, playerName))
+                .flatMap(gameRepository::save)
+                .map(Game::getId);
+    }
+
     private Mono<Game> executeCleanUp(Game game) {
         boolean croupierHasBlackjack = blackjackHelper.isBlackjack(game.getCroupier().getCards());
         int croupierScore = blackjackHelper.getHandValue(game.getCroupier().getCards());
