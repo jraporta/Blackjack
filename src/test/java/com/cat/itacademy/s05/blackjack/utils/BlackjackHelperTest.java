@@ -24,8 +24,8 @@ public class BlackjackHelperTest {
 
     public BlackjackHelperTest() {
         this.blackjackHand = List.of(new Card(Suit.CLUBS, Rank.ACE), new Card(Suit.CLUBS, Rank.KING));
-        this.withoutAcesHand = List.of(new Card(Suit.HEARTS, Rank.TWO), new Card(Suit.CLUBS, Rank.TEN)
-                , new Card(Suit.DIAMONDS, Rank.EIGHT));
+        this.withoutAcesHand = List.of(new Card(Suit.CLUBS, Rank.THREE), new Card(Suit.SPADES, Rank.FOUR)
+                , new Card(Suit.CLUBS, Rank.NINE), new Card(Suit.HEARTS, Rank.FIVE));
         this.withAceUnder21Hand = List.of(new Card(Suit.HEARTS, Rank.FOUR), new Card(Suit.CLUBS, Rank.FIVE)
                 , new Card(Suit.DIAMONDS, Rank.ACE));
         this.withAceOver21Hand = List.of(new Card(Suit.HEARTS, Rank.NINE), new Card(Suit.CLUBS, Rank.EIGHT)

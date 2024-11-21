@@ -39,15 +39,15 @@ public class CleanUpService {
     private PlayerStatus determinePlayerStatus(PlayerInGame player, boolean croupierHasBlackjack, int croupierScore) {
         if (player.getStatus() == PlayerStatus.SURRENDER) {
             return PlayerStatus.SURRENDER;
-        } else if (player.getStatus() == PlayerStatus.BUST || helper.isBust(player.getCards())) {
-            return PlayerStatus.LOOSE;
         } else if (helper.isBlackjack(player.getCards()) && !croupierHasBlackjack) {
             return PlayerStatus.BLACKJACK;
-        } else if ((croupierHasBlackjack && !helper.isBlackjack(player.getCards())) ||
-                croupierScore > helper.getHandValue(player.getCards())) {
+        } else if (player.getStatus() == PlayerStatus.BUST || helper.isBust(player.getCards())) {
             return PlayerStatus.LOOSE;
         } else if (croupierScore > 21 || helper.getHandValue(player.getCards()) > croupierScore) {
             return PlayerStatus.WIN;
+        } else if ((croupierHasBlackjack && !helper.isBlackjack(player.getCards())) ||
+                croupierScore > helper.getHandValue(player.getCards())) {
+            return PlayerStatus.LOOSE;
         } else if (helper.getHandValue(player.getCards()) == croupierScore) {
             return PlayerStatus.TIE;
         }
