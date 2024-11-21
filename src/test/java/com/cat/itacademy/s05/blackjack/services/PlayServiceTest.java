@@ -51,7 +51,7 @@ public class PlayServiceTest {
     @Test
     void executePlay_GameIsConcluded_InvalidPlayException(){
         game.setConcluded(true);
-        playDTO = new PlayDTO(1234L, Play.INITIAL_BET, 10);
+        playDTO = new PlayDTO("1234", Play.INITIAL_BET, 10);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .expectError(InvalidPlayException.class)
@@ -60,7 +60,7 @@ public class PlayServiceTest {
 
     @Test
     void executePlay_ActivePlayerNotEqualsPlayPlayer_InvalidPlayException(){
-        playDTO = new PlayDTO(1111L, Play.INITIAL_BET, 10);
+        playDTO = new PlayDTO("1111", Play.INITIAL_BET, 10);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .expectError(InvalidPlayException.class)
@@ -70,7 +70,7 @@ public class PlayServiceTest {
     @Test
     void executePlay_PlayerHasNoBetAndPlayIsNotInitialBet_InvalidPlayException(){
         game.getPlayers().getFirst().setBet(0);
-        playDTO = new PlayDTO(1234L, Play.HIT, 0);
+        playDTO = new PlayDTO("1234", Play.HIT, 0);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .expectError(InvalidPlayException.class)
@@ -80,7 +80,7 @@ public class PlayServiceTest {
     @Test
     void executePlay_InitialBetPlayButNoBetBetIsZero_InvalidPlayException(){
         game.getPlayers().getFirst().setBet(0);
-        playDTO = new PlayDTO(1234L, Play.INITIAL_BET, 0);
+        playDTO = new PlayDTO("1234", Play.INITIAL_BET, 0);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .expectError(InvalidPlayException.class)
@@ -91,12 +91,13 @@ public class PlayServiceTest {
     void executePlay_InitialBetPlayButAlreadyHasBet_InvalidPlayException(){
         game.getPlayers().getFirst().setBet(50);
         game.getPlayers().getFirst().setStatus(PlayerStatus.PLAYING);
-        playDTO = new PlayDTO(1234L, Play.INITIAL_BET, 10);
+        playDTO = new PlayDTO("1234", Play.INITIAL_BET, 10);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .expectError(InvalidPlayException.class)
                 .verify();
     }
+
 
     @Test
     void executePlay_InitialBetPlayerHasNoBet_PlayerGetsBetAndUpdatedStatus(){
@@ -109,7 +110,7 @@ public class PlayServiceTest {
         game.getPlayers().getLast().setBet(0);
         game.getPlayers().getLast().setStatus(PlayerStatus.PENDING_BET);
 
-        playDTO = new PlayDTO(1234L, Play.INITIAL_BET, 20);
+        playDTO = new PlayDTO("1234", Play.INITIAL_BET, 20);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .consumeNextWith(game1 -> {
@@ -133,7 +134,7 @@ public class PlayServiceTest {
         game.getPlayers().getLast().setBet(0);
         game.getPlayers().getLast().setStatus(PlayerStatus.PENDING_BET);
 
-        playDTO = new PlayDTO(4321L, Play.INITIAL_BET, 20);
+        playDTO = new PlayDTO("4321", Play.INITIAL_BET, 20);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .consumeNextWith(game1 -> {
@@ -159,7 +160,7 @@ public class PlayServiceTest {
         game.getPlayers().getFirst().setCards(new ArrayList<>());
         game.getPlayers().getFirst().getCards().addAll(List.of(new Card(null, null), new Card(null, null)));
 
-        playDTO = new PlayDTO(1234L, Play.HIT, 0);
+        playDTO = new PlayDTO("1234", Play.HIT, 0);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .consumeNextWith(game1 -> {
@@ -181,7 +182,7 @@ public class PlayServiceTest {
         game.getPlayers().getFirst().setCards(new ArrayList<>());
         game.getPlayers().getFirst().getCards().addAll(List.of(new Card(null, null), new Card(null, null)));
 
-        playDTO = new PlayDTO(1234L, Play.HIT, 0);
+        playDTO = new PlayDTO("1234", Play.HIT, 0);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .consumeNextWith(game1 -> {
@@ -203,7 +204,7 @@ public class PlayServiceTest {
         game.getPlayers().getFirst().setCards(new ArrayList<>());
         game.getPlayers().getFirst().getCards().addAll(List.of(new Card(null, null), new Card(null, null)));
 
-        playDTO = new PlayDTO(1234L, Play.HIT, 0);
+        playDTO = new PlayDTO("1234", Play.HIT, 0);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .consumeNextWith(game1 -> {
@@ -219,7 +220,7 @@ public class PlayServiceTest {
         game.getPlayers().getFirst().setBet(50);
         game.getPlayers().getFirst().setStatus(PlayerStatus.PLAYING);
         game.getPlayers().getFirst().setCards(List.of(new Card(null, null), new Card(null, null), new Card(null, null)));
-        playDTO = new PlayDTO(1234L, play, 10);
+        playDTO = new PlayDTO("1234", play, 10);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .expectError(InvalidPlayException.class)

@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name = "Play", description = "Data object representing a play")
 public record PlayDTO(
         @Schema(description = "Id of the player doing the play", example = "1234")
-        Long playerId,
+        String playerId,
 
         @Schema(description = "Type of play", examples = {"INITIAL_BET", "HIT", "STAND", "DOUBLE", "SPLIT", "SURRENDER"})
         Play play,
