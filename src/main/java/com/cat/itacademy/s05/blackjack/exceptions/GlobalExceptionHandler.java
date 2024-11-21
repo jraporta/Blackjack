@@ -28,6 +28,11 @@ public class GlobalExceptionHandler {
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()));
     }
 
+    @ExceptionHandler(GameNotJoinableException.class)
+    public Mono<ResponseEntity<String>> handleGameNotJoinable(GameNotJoinableException ex){
+        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage()));
+    }
+
     @ExceptionHandler({IllegalPlayerStatusException.class, IllegalGameStateException.class,
             IllegalArgumentException.class})
     public Mono<ResponseEntity<String>> handleUnexpectedExceptions(RuntimeException ex){

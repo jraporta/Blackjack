@@ -68,7 +68,7 @@ public class GameController {
                                     name = "example response",
                                     value = "Player joined game with id: 673b4e77d181ca65a6f436b9"
                             ))),
-                    @ApiResponse(responseCode = "400", description = "No name provided"),
+                    @ApiResponse(responseCode = "400", description = "No name provided / The game is already in progress, no new players can join"),
                     @ApiResponse(responseCode = "404", description = "Game not found")
             }
     )

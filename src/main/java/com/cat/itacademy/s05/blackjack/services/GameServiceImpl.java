@@ -4,7 +4,9 @@ package com.cat.itacademy.s05.blackjack.services;
 import com.cat.itacademy.s05.blackjack.dto.PlayDTO;
 import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTO;
 import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTOFactory;
+import com.cat.itacademy.s05.blackjack.enums.PlayerStatus;
 import com.cat.itacademy.s05.blackjack.exceptions.custom.GameNotFoundException;
+import com.cat.itacademy.s05.blackjack.exceptions.custom.GameNotJoinableException;
 import com.cat.itacademy.s05.blackjack.model.*;
 import com.cat.itacademy.s05.blackjack.repositories.GameRepository;
 import com.cat.itacademy.s05.blackjack.utils.BlackjackHelper;
@@ -115,9 +117,21 @@ public class GameServiceImpl implements GameService {
     @Override
     public Mono<String> joinGame(String gameId, String playerName) {
         return getGame(gameId)
+                .flatMap(this::verifyGameHasNotStarted)
                 .flatMap(game -> addPlayer(game, playerName))
                 .flatMap(gameRepository::save)
                 .map(Game::getId);
+    }
+
+    private Mono<Game> verifyGameHasNotStarted(Game game) {
+        return Flux.fromIterable(game.getPlayers())
+                .flatMap(playerInGame -> {
+                    PlayerStatus status = playerInGame.getStatus();
+                    if (status.equals(PlayerStatus.PENDING_BET) || status.equals(PlayerStatus.WAITING_FOR_DEAL)) {
+                        return Mono.empty();
+                    }
+                    return Flux.error(new GameNotJoinableException("The game is in progress; no new players can join"));
+                }).then(Mono.just(game));
     }
 
     private Mono<Game> executeCleanUp(Game game) {
