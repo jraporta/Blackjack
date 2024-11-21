@@ -1,6 +1,5 @@
 package com.cat.itacademy.s05.blackjack.model;
 
-import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;

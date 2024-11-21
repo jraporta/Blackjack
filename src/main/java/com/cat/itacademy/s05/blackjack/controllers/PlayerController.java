@@ -60,7 +60,7 @@ public class PlayerController {
     @PutMapping("/player/{playerId}")
     public Mono<ResponseEntity<Player>> updatePlayerName(
             @Parameter(description = "Id of the player to update", example = "1234")
-            @PathVariable Long playerId,
+            @PathVariable String playerId,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "New name of the player",
                     required = true,

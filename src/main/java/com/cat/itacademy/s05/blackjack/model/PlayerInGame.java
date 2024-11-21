@@ -15,7 +15,7 @@ import java.util.List;
 public class PlayerInGame {
 
     @Schema(description = "Identifier of the player", example = "1234")
-    private Long id;
+    private String id;
 
     @Schema(description = "Name of the player", example = "John Doe")
     private String name;
@@ -30,7 +30,7 @@ public class PlayerInGame {
             "SURRENDER", "BLACKJACK", "BUST", "TIE", "WIN", "LOOSE"})
     private PlayerStatus status;
 
-    public PlayerInGame(Long id, String name) {
+    public PlayerInGame(String id, String name) {
         this.id = id;
         this.name = name;
         this.bet = 0;

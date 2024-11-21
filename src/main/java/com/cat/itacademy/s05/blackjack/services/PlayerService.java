@@ -8,17 +8,17 @@ import java.util.List;
 public interface PlayerService {
     Mono<Player> getPlayer(String playerName);
 
-    Mono<Player> getPlayerById(Long playerId);
+    Mono<Player> getPlayerById(String playerId);
 
     Mono<Player> savePlayer(Player player);
 
     Mono<Player> createPlayer(String playerName);
 
-    Mono<Player> addMoney(Long playerId, int money);
+    Mono<Player> addMoney(String playerId, int money);
 
-    Mono<Player> subtractMoney(Long playerId, int money);
+    Mono<Player> subtractMoney(String playerId, int money);
 
     Mono<List<Player>> getRanking();
 
-    Mono<Player> updatePlayerName(Long playerId, String playerName);
+    Mono<Player> updatePlayerName(String playerId, String playerName);
 }

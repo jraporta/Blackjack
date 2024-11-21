@@ -5,18 +5,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 
 @Getter
 @Setter
+@Document(collection = "players")
 @Schema(name = "Player", description = "Data object representing a player")
-@Table("player")
 public class Player {
 
     @Schema(description = "Identifier of the player", example = "1234")
-    @Id
-    private Long id;
+    private @Id String id;
 
     @Schema(description = "Name of the player", example = "John Doe")
     private String name;

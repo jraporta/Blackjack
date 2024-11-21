@@ -1,6 +1,5 @@
 package com.cat.itacademy.s05.blackjack.services;
 
-import com.cat.itacademy.s05.blackjack.exceptions.custom.IllegalGameStateException;
 import com.cat.itacademy.s05.blackjack.exceptions.custom.PlayerNotFoundException;
 import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.repositories.PlayerRepository;
@@ -24,7 +23,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Mono<Player> getPlayerById(Long playerId) {
+    public Mono<Player> getPlayerById(String playerId) {
         return playerRepository.findById(playerId);
     }
 
@@ -39,7 +38,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Mono<Player> addMoney(Long playerId, int money) {
+    public Mono<Player> addMoney(String playerId, int money) {
         return playerRepository.findById(playerId)
                 .flatMap(player -> {
                     player.setMoney(player.getMoney() + money);
@@ -49,17 +48,17 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Mono<Player> subtractMoney(Long playerId, int money) {
+    public Mono<Player> subtractMoney(String playerId, int money) {
         return addMoney(playerId, -money);
     }
 
     @Override
     public Mono<List<Player>> getRanking() {
-        return playerRepository.findAllOrderByMoneyDesc().collectList();
+        return playerRepository.findAllByOrderByMoneyDesc().collectList();
     }
 
     @Override
-    public Mono<Player> updatePlayerName(Long playerId, String playerName) {
+    public Mono<Player> updatePlayerName(String playerId, String playerName) {
         return playerRepository.findById(playerId)
                 .switchIfEmpty(Mono.error(new PlayerNotFoundException("No player found with id: " + playerId)))
                 .flatMap(player -> {

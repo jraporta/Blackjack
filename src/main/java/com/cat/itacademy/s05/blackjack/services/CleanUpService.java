@@ -72,7 +72,7 @@ public class CleanUpService {
 
     }
 
-    private Mono<Player> updatePlayer(long playerId, int winnings) {
+    private Mono<Player> updatePlayer(String playerId, int winnings) {
         return playerService.getPlayerById(playerId)
                 .flatMap(player -> {
                     player.setGamesPlayed(player.getGamesPlayed() + 1);

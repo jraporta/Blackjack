@@ -45,7 +45,7 @@ public class PlayServiceTest {
     void setUp(){
         game = new Game();
         game.setPlayers(new ArrayList<>());
-        game.getPlayers().add(new PlayerInGame(1234L, "test player"));
+        game.getPlayers().add(new PlayerInGame("1234", "test player"));
     }
 
     @Test
@@ -100,9 +100,9 @@ public class PlayServiceTest {
 
     @Test
     void executePlay_InitialBetPlayerHasNoBet_PlayerGetsBetAndUpdatedStatus(){
-        when(mockPlayerService.subtractMoney(anyLong(), anyInt())).thenReturn(Mono.just(new Player()));
+        when(mockPlayerService.subtractMoney(anyString(), anyInt())).thenReturn(Mono.just(new Player()));
 
-        game.getPlayers().add(new PlayerInGame(4321L, "test player 2"));
+        game.getPlayers().add(new PlayerInGame("4321", "test player 2"));
 
         game.getPlayers().getFirst().setBet(0);
         game.getPlayers().getFirst().setStatus(PlayerStatus.PENDING_BET);
@@ -121,11 +121,11 @@ public class PlayServiceTest {
 
     @Test
     void executePlay_AfterInitialBetAllPlayersHaveBet_CardsGetDealtAndUpdatedStatus(){
-        when(mockPlayerService.subtractMoney(anyLong(), anyInt())).thenReturn(Mono.just(new Player()));
+        when(mockPlayerService.subtractMoney(anyString(), anyInt())).thenReturn(Mono.just(new Player()));
         doAnswer(invocation -> ((List<Card>) invocation.getArguments()[1]).add(new Card(Suit.CLUBS, Rank.KING)))
                 .when(mockDeckService).dealCard(any(), anyList());
 
-        game.getPlayers().add(new PlayerInGame(4321L, "test player 2"));
+        game.getPlayers().add(new PlayerInGame("4321", "test player 2"));
         game.setActivePlayerIndex(1);
 
         game.getPlayers().getFirst().setBet(10);

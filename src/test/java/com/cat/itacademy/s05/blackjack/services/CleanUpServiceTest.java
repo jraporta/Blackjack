@@ -53,7 +53,7 @@ public class CleanUpServiceTest {
 
     @BeforeEach
     void setUp() {
-        playerInGame = new PlayerInGame(123L, "example player");
+        playerInGame = new PlayerInGame("123", "example player");
 
         player = new Player("example player");
         player.setGamesPlayed(INITIAL_GAMES_PLAYED);
@@ -199,7 +199,7 @@ public class CleanUpServiceTest {
             "BLACKJACK, 10, 25"
     })
     void resolveBet_GivenPlayerStatus_WinningsAreCorrect(PlayerStatus status, int bet, int expectedWinnings){
-        when(mockPlayerService.getPlayerById(anyLong())).thenReturn(Mono.just(player));
+        when(mockPlayerService.getPlayerById(anyString())).thenReturn(Mono.just(player));
         when(mockPlayerService.savePlayer(player)).thenReturn(Mono.just(player));
 
         playerInGame.setStatus(status);
@@ -232,7 +232,7 @@ public class CleanUpServiceTest {
 
     @Test
     void resolveBet_WhenProcessed_IncreaseByOneGamesPlayed(){
-        when(mockPlayerService.getPlayerById(anyLong())).thenReturn(Mono.just(player));
+        when(mockPlayerService.getPlayerById(anyString())).thenReturn(Mono.just(player));
         when(mockPlayerService.savePlayer(player)).thenReturn(Mono.just(player));
 
         playerInGame.setStatus(PlayerStatus.LOOSE);
