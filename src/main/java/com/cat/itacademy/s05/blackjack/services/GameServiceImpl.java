@@ -1,6 +1,7 @@
 package com.cat.itacademy.s05.blackjack.services;
 
 
+import com.cat.itacademy.s05.blackjack.config.Properties;
 import com.cat.itacademy.s05.blackjack.dto.PlayDTO;
 import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTO;
 import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTOFactory;
@@ -25,10 +26,11 @@ public class GameServiceImpl implements GameService {
     private final CleanUpService cleanUpService;
     private final CroupierService croupierService;
     private final BlackjackHelper blackjackHelper;
+    private final Properties properties;
 
     public GameServiceImpl(GameRepository gameRepository, PlayerServiceImpl playerService, PlayService playService,
                            DeckService deckService, GameDTOFactory gameDTOFactory, CleanUpService cleanUpService,
-                           CroupierService croupierService, BlackjackHelper blackjackHelper) {
+                           CroupierService croupierService, BlackjackHelper blackjackHelper, Properties properties) {
         this.gameRepository = gameRepository;
         this.playerService = playerService;
         this.playService = playService;
@@ -37,6 +39,7 @@ public class GameServiceImpl implements GameService {
         this.cleanUpService = cleanUpService;
         this.croupierService = croupierService;
         this.blackjackHelper = blackjackHelper;
+        this.properties = properties;
     }
 
     @Override
@@ -118,6 +121,7 @@ public class GameServiceImpl implements GameService {
     public Mono<String> joinGame(String gameId, String playerName) {
         return getGame(gameId)
                 .flatMap(this::verifyGameHasNotStarted)
+                .flatMap(game -> verityNumberOfPlayers(game, playerName))
                 .flatMap(game -> addPlayer(game, playerName))
                 .flatMap(gameRepository::save)
                 .map(Game::getId);
@@ -132,6 +136,19 @@ public class GameServiceImpl implements GameService {
                     }
                     return Flux.error(new GameNotJoinableException("The game is in progress; no new players can join"));
                 }).then(Mono.just(game));
+    }
+
+    private Mono<Game> verityNumberOfPlayers(Game game, String playerName) {
+        if (game.getPlayers().size() >= properties.getPlayingPositions()) {
+            return Mono.error(new GameNotJoinableException("All the playing positions are occupied. No more players accepted."));
+        }
+        long betsByPlayer = game.getPlayers().stream()
+                .filter(playerInGame -> playerInGame.getName().equals(playerName))
+                .count();
+        if (betsByPlayer >= properties.getSimultaneousBetsAllowed()) {
+            return Mono.error(new GameNotJoinableException("The player has reached the number of bets limit for a single game."));
+        }
+        return Mono.just(game);
     }
 
     private Mono<Game> executeCleanUp(Game game) {
