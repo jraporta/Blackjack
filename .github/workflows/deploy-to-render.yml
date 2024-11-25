@@ -23,6 +23,8 @@ jobs:
 
       # Step 3: Run Maven build
       - name: Run mvn clean install
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: mvn clean install
 
       # Step 4: Set up Docker Buildx (for multi-platform builds, optional)
