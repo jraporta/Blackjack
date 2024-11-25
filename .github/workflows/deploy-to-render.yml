@@ -51,9 +51,7 @@ jobs:
 
       # Step 7: Push Docker image to Docker Hub
       - name: Push Docker image to Docker Hub
-        run: |
-        #  docker tag jraporta/blackjack:latest jraporta/blackjack:latest
-          docker push jraporta/blackjack:latest
+        run: docker push jraporta/blackjack:latest
 
       # Step 8: Deploy to Render using the API Key
       - name: Trigger Render deployment with new Docker image
