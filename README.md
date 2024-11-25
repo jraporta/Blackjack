@@ -14,6 +14,7 @@ Create a reactive Spring Boot API for a Blackjack game.
 - Docker
 - Docker Compose
 - Maven
+- Github actions
 
 ## 📋Requirements
 
