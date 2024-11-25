@@ -36,14 +36,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Step 6a: Remove the last Docker image version from Docker Hub
-      #- name: Delete the last version of the Docker image from Docker Hub
-      #  run: |
-        #  docker pull jraporta/blackjack:latest
-        #  docker rmi jraporta/blackjack:latest || true
-        #  docker tag jraporta/blackjack:latest jraporta/blackjack:<current_date_version>  # Optionally tag with version or date
-        #  docker push jraporta/blackjack:latest  # Push the latest tag
-        # docker push jraporta/blackjack:<current_date_version>  # Optionally push a dated version as well
+      # Step 6a: Rename the last Docker image version from Docker Hub and push back to Docker Hub
+      - name: Delete the last version of the Docker image from Docker Hub
+        run: |
+          docker pull jraporta/blackjack:latest
+          docker tag jraporta/blackjack:latest jraporta/blackjack:<current_date_version>
+          docker push jraporta/blackjack:<current_date_version>
 
       # Step 6: Build the Docker image
       - name: Build Docker image
