@@ -54,7 +54,7 @@ jobs:
       # Step 8: Deploy to Render using the API Key
       - name: Trigger Render deployment with new Docker image
         run: |
-          curl -X POST https://api.render.com/v1/services/YOUR_RENDER_SERVICE_ID/deploys \
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }} \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" \
           -d '{
