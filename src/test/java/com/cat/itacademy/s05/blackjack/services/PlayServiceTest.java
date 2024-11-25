@@ -273,27 +273,145 @@ public class PlayServiceTest {
 
     @Test
     void executePlay_PlaySplitWithDifferentCards_InvalidPlayException(){
+        game.getPlayers().getFirst().setBet(50);
+        game.getPlayers().getFirst().setStatus(PlayerStatus.PLAYING);
+        game.getPlayers().getFirst().setCards(new ArrayList<>());
+        game.getPlayers().getFirst().getCards()
+                .addAll(List.of(new Card(Suit.CLUBS, Rank.KING), new Card(Suit.CLUBS, Rank.EIGHT)));
+        playDTO = new PlayDTO("1234", Play.SPLIT, 0);
 
+        StepVerifier.create(playService.executePlay(game, playDTO))
+                .expectError(InvalidPlayException.class)
+                .verify();
     }
 
     @Test
     void executePlay_PlayValidSplit_BetGetsPayedPlayerAddedToGameCardsGetDealt(){
+        when(mockPlayerService.subtractMoney(anyString(), anyInt())).thenReturn(Mono.just(new Player()));
+        doAnswer(invocation -> ((List<Card>) invocation.getArguments()[1]).add(new Card(null, null)))
+                .when(mockDeckService).dealCard(any(), anyList());
 
+        int bet = 50;
+        game.getPlayers().getFirst().setBet(bet);
+        game.getPlayers().getFirst().setStatus(PlayerStatus.PLAYING);
+        game.getPlayers().getFirst().setCards(new ArrayList<>());
+        Card card1 = new Card(Suit.CLUBS, Rank.KING);
+        Card card2 = new Card(Suit.HEARTS, Rank.KING);
+        game.getPlayers().getFirst().getCards()
+                .addAll(List.of(card1, card2));
+        playDTO = new PlayDTO("1234", Play.SPLIT, 0);
+
+        StepVerifier.create(playService.executePlay(game, playDTO))
+                .consumeNextWith(game1 -> {
+                    assertEquals(2, game1.getPlayers().size(), "Player count increments in 1");
+                    PlayerInGame p1 = game.getPlayers().getFirst();
+                    PlayerInGame p2 = game.getPlayers().getLast();
+                    assertEquals(p1, p2, "Player1 is the same as Player2");
+                    assertEquals(PlayerStatus.PLAYING, p1.getStatus(), "P1 status is PLAYING");
+                    assertEquals(PlayerStatus.PLAYING, p2.getStatus(), "P2 status is PLAYING");
+                    assertEquals(card1, p1.getCards().getFirst(), "P1 keeps 1st card");
+                    assertEquals(card2, p2.getCards().getFirst(), "P1 gets 2nd card");
+                    assertEquals(2, p1.getCards().size(), "P1 gets 1 card");
+                    assertEquals(2, p2.getCards().size(), "P2 gets 1 card");
+                    assertEquals(bet, p1.getBet(), "P1 bet isn't modified");
+                    assertEquals(bet, p2.getBet(), "P2 bets initial bet");
+                    assertFalse(game1.isConcluded(), "Game in progress");
+                }).verifyComplete();
     }
 
     @Test
     void executePlay_PlaySurrender_StatusSetToSurrenderGameIsConcluded(){
+        int bet = 50;
+        game.getPlayers().getFirst().setBet(bet);
+        game.getPlayers().getFirst().setStatus(PlayerStatus.PLAYING);
+        List<Card> cards = new ArrayList<>();
+        game.getPlayers().getFirst().setCards(cards);
+        playDTO = new PlayDTO("1234", Play.SURRENDER, 0);
 
+        StepVerifier.create(playService.executePlay(game, playDTO))
+                .consumeNextWith(game1 -> {
+                    PlayerInGame player = game1.getPlayers().getFirst();
+                    assertEquals(PlayerStatus.SURRENDER, player.getStatus(), "Player status is SURRENDER");
+                    assertEquals(0, player.getCards().size(), "No card is dealt");
+                    assertEquals(bet, player.getBet(), "Player's bet isn't modified");
+                    assertTrue(game1.isConcluded(), "Game concludes");
+                }).verifyComplete();
     }
 
     @Test
     void executePlay_PlayStand_StatusSetToStand(){
+        int bet = 50;
+        game.getPlayers().getFirst().setBet(bet);
+        game.getPlayers().getFirst().setStatus(PlayerStatus.PLAYING);
+        List<Card> cards = new ArrayList<>();
+        game.getPlayers().getFirst().setCards(cards);
+        playDTO = new PlayDTO("1234", Play.STAND, 0);
 
+        StepVerifier.create(playService.executePlay(game, playDTO))
+                .consumeNextWith(game1 -> {
+                    PlayerInGame player = game1.getPlayers().getFirst();
+                    assertEquals(PlayerStatus.STAND, player.getStatus(), "Player status is STAND");
+                    assertEquals(0, player.getCards().size(), "No card is dealt");
+                    assertEquals(bet, player.getBet(), "Player's bet isn't modified");
+                    assertTrue(game1.isConcluded(), "Game concludes");
+                }).verifyComplete();
     }
 
     @Test
-    void executePlay_Play4PlacesGame_PlayersHavePassedGetSkipped(){
+    void executePlay_PlayMultiplayerGame_PlayersThatAreNotPlayingGetSkipped(){
+        game.getPlayers().getFirst().setStatus(PlayerStatus.PLAYING);
+        PlayerInGame p2 =new PlayerInGame("12", "2nd Player");
+        p2.setStatus(PlayerStatus.STAND);
+        PlayerInGame p3 =new PlayerInGame("13", "3rd Player");
+        p3.setStatus(PlayerStatus.SURRENDER);
+        PlayerInGame p4 =new PlayerInGame("14", "3rd Player");
+        p4.setStatus(PlayerStatus.PLAYING);
+        game.getPlayers().addAll(List.of(p2, p3, p4));
+        playDTO = new PlayDTO("1234", Play.STAND, 0);
 
+        StepVerifier.create(playService.executePlay(game, playDTO))
+                .consumeNextWith(game1 -> {
+                    assertEquals(3, game1.getActivePlayerIndex(), "Players with index 1 and 2 get skipped");
+                    assertFalse(game1.isConcluded(), "Game continues");
+                }).verifyComplete();
+    }
+
+    @Test
+    void executePlay_PlayMultiplayerGame_PlayerListRestartsFromBeginningWhenEndIsReached(){
+        game.getPlayers().getFirst().setStatus(PlayerStatus.BUST);
+        PlayerInGame p2 =new PlayerInGame("12", "2nd Player");
+        p2.setStatus(PlayerStatus.STAND);
+        PlayerInGame p3 =new PlayerInGame("13", "3rd Player");
+        p3.setStatus(PlayerStatus.PLAYING);
+        PlayerInGame p4 =new PlayerInGame("14", "3rd Player");
+        p4.setStatus(PlayerStatus.PLAYING);
+        game.getPlayers().addAll(List.of(p2, p3, p4));
+        game.setActivePlayerIndex(3);
+        playDTO = new PlayDTO("14", Play.STAND, 0);
+
+        StepVerifier.create(playService.executePlay(game, playDTO))
+                .consumeNextWith(game1 -> {
+                    assertEquals(2, game1.getActivePlayerIndex(), "Not playing players get skipped");
+                    assertFalse(game1.isConcluded(), "Game continues");
+                }).verifyComplete();
+    }
+
+    @Test
+    void executePlay_AllPlayersPass_GameEnds(){
+        game.getPlayers().getFirst().setStatus(PlayerStatus.PLAYING);
+        PlayerInGame p2 =new PlayerInGame("12", "2nd Player");
+        p2.setStatus(PlayerStatus.STAND);
+        PlayerInGame p3 =new PlayerInGame("13", "3rd Player");
+        p3.setStatus(PlayerStatus.SURRENDER);
+        PlayerInGame p4 =new PlayerInGame("14", "3rd Player");
+        p4.setStatus(PlayerStatus.BUST);
+        game.getPlayers().addAll(List.of(p2, p3, p4));
+        playDTO = new PlayDTO("1234", Play.STAND, 0);
+
+        StepVerifier.create(playService.executePlay(game, playDTO))
+                .consumeNextWith(game1 -> {
+                    assertTrue(game1.isConcluded(), "Game concludes");
+                }).verifyComplete();
     }
 
 }

@@ -150,9 +150,9 @@ public class PlayService {
     private boolean allPassed(Game game) {
         return game.getPlayers()
                 .stream()
-                .allMatch(player -> player.getStatus() == PlayerStatus.STAND
-                        || player.getStatus() == PlayerStatus.BUST
-                        || player.getStatus() == PlayerStatus.SURRENDER);
+                .allMatch(player -> player.getStatus() != PlayerStatus.PENDING_BET
+                        && player.getStatus() != PlayerStatus.WAITING_FOR_DEAL
+                        && player.getStatus() != PlayerStatus.PLAYING);
     }
 
     private boolean allWaitingForDeal(Game game) {
@@ -175,9 +175,9 @@ public class PlayService {
     private void switchToNextActivePlayer(Game game) {
         do {
             increaseActivePlayerIndex(game);
-        } while (game.getActivePlayer().getStatus() == PlayerStatus.STAND
-                || game.getActivePlayer().getStatus() == PlayerStatus.BUST
-                || game.getActivePlayer().getStatus() == PlayerStatus.SURRENDER);
+        } while (game.getActivePlayer().getStatus() != PlayerStatus.PENDING_BET
+                && game.getActivePlayer().getStatus() != PlayerStatus.WAITING_FOR_DEAL
+                && game.getActivePlayer().getStatus() != PlayerStatus.PLAYING);
     }
 
     private void increaseActivePlayerIndex(Game game) {

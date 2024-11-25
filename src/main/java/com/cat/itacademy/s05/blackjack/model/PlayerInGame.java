@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -40,6 +41,18 @@ public class PlayerInGame {
 
     public void getCard(Card card){
         this.cards.add(card);
+    }
+
+    @Override
+    public boolean equals(Object o){
+        return (o instanceof PlayerInGame &&
+                this.getId().equals(((PlayerInGame) o).getId()) &&
+                this.getName().equals(((PlayerInGame) o).getName()));
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(this.id, this.name);
     }
 
 }
