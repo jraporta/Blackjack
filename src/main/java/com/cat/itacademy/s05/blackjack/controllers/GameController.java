@@ -38,7 +38,7 @@ public class GameController {
                                     name = "example response",
                                     value = "Created game with id: 673b4e77d181ca65a6f436b9"
                             ))),
-                    @ApiResponse(responseCode = "400", description = "No name provided")
+                    @ApiResponse(responseCode = "400", description = "No name provided", content = @Content())
             }
     )
     @PostMapping("/game/new")
@@ -68,8 +68,29 @@ public class GameController {
                                     name = "example response",
                                     value = "Player joined game with id: 673b4e77d181ca65a6f436b9"
                             ))),
-                    @ApiResponse(responseCode = "400", description = "No name provided / The game is already in progress, no new players can join"),
-                    @ApiResponse(responseCode = "404", description = "Game not found")
+                    @ApiResponse(responseCode = "400", description = "No name provided / The game is already in progress, no new players can join", content = @Content(
+                            mediaType = "text/plain",
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Game in progress",
+                                            value = "The game is in progress; no new players can join"
+                                    ),
+                                    @ExampleObject(
+                                            name = "Bet limit for a player reached",
+                                            value = "The player has reached the number of bets limit for a single game."
+                                    ),
+                                    @ExampleObject(
+                                            name = "Player limit reached",
+                                            value = "All the playing positions are occupied. No more players accepted."
+                                    )
+                            })),
+                    @ApiResponse(responseCode = "404", description = "Game not found", content = @Content(
+                            mediaType = "text/plain",
+                            examples =
+                                @ExampleObject(
+                                        name = "Game not found",
+                                        value = "No game with id: 673751d2af0fa27b22eb19a3"
+                                )))
             }
     )
     @PostMapping("/game/{id}/join")
@@ -98,7 +119,13 @@ public class GameController {
                             mediaType = "application/json",
                             schema = @Schema(oneOf = {GameCompletedDTO.class, GameInProgressDTO.class})
                     )),
-                    @ApiResponse(responseCode = "404", description = "Game not found")
+                    @ApiResponse(responseCode = "404", description = "Game not found", content = @Content(
+                            mediaType = "text/plain",
+                            examples =
+                            @ExampleObject(
+                                    name = "Game not found",
+                                    value = "No game with id: 673751d2af0fa27b22eb19a3"
+                            )))
             }
     )
     @GetMapping("/game/{id}")
@@ -117,7 +144,39 @@ public class GameController {
                             mediaType = "application/json",
                             schema = @Schema(oneOf = {GameCompletedDTO.class, GameInProgressDTO.class})
                     )),
-                    @ApiResponse(responseCode = "404", description = "Invalid play")
+                    @ApiResponse(responseCode = "404", description = "Game not found", content = @Content(
+                            mediaType = "text/plain",
+                            examples = @ExampleObject(
+                                    name = "Game not found",
+                                    value = "No game with id: 673751d2af0fa27b22eb19a3"
+                            )
+                    )),
+                    @ApiResponse(responseCode = "404", description = "Invalid play", content = @Content(
+                            mediaType = "text/plain",
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Not active player",
+                                            value = "It's the turn of the player with id: 673f22257b21b20c20d0d290"
+                                    ),
+                                    @ExampleObject(
+                                            name = "Not bet",
+                                            value = "Player has no bet. First play must be 'INITIAL_BET'."
+                                    ),
+                                    @ExampleObject(
+                                            name = "Invalid play",
+                                            value = "Split is only allowed if the two cards have the same rank."
+                                    ),
+                                    @ExampleObject(
+                                            name = "Game is over",
+                                            value = "Game is over, no more plays accepted."
+                                    ),
+                                    @ExampleObject(
+                                            name = "Invalid bet",
+                                            value = "Initial bet play must have a valid bet.",
+                                            description = "Bet is 0 or less."
+                                    )
+                            }
+                    ))
             }
     )
     @PostMapping("/game/{id}/play")
@@ -141,8 +200,14 @@ public class GameController {
             summary = "Delete a game",
             description = "Delete a blackjack game.",
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Game deleted"),
-                    @ApiResponse(responseCode = "404", description = "Game not found")
+                    @ApiResponse(responseCode = "204", description = "Game deleted", content = @Content()),
+                    @ApiResponse(responseCode = "404", description = "Game not found", content = @Content(
+                            mediaType = "text/plain",
+                            examples =
+                            @ExampleObject(
+                                    name = "Game not found",
+                                    value = "No game with id: 673751d2af0fa27b22eb19a3"
+                            )))
             }
     )
     @DeleteMapping("/game/{id}/delete")

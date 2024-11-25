@@ -78,9 +78,19 @@ public class PlayServiceTest {
     }
 
     @Test
-    void executePlay_InitialBetPlayButNoBetBetIsZero_InvalidPlayException(){
+    void executePlay_InitialBetPlayButBetIsZero_InvalidPlayException(){
         game.getPlayers().getFirst().setBet(0);
         playDTO = new PlayDTO("1234", Play.INITIAL_BET, 0);
+
+        StepVerifier.create(playService.executePlay(game, playDTO))
+                .expectError(InvalidPlayException.class)
+                .verify();
+    }
+
+    @Test
+    void executePlay_InitialBetPlayButBetIsLessThanZero_InvalidPlayException(){
+        game.getPlayers().getFirst().setBet(0);
+        playDTO = new PlayDTO("1234", Play.INITIAL_BET, -10);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .expectError(InvalidPlayException.class)

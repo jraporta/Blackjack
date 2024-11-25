@@ -1,6 +1,5 @@
 package com.cat.itacademy.s05.blackjack.controllers;
 
-import com.cat.itacademy.s05.blackjack.dto.gamedto.GameDTO;
 import com.cat.itacademy.s05.blackjack.model.Player;
 import com.cat.itacademy.s05.blackjack.services.GameService;
 import com.cat.itacademy.s05.blackjack.services.PlayerService;
@@ -32,7 +31,7 @@ public class PlayerController {
 
     @Operation(
             summary = "Get ranking",
-            description = "Get a ranking of the players based on their performance in the blackjack games.",
+            description = "Get a list of all the players ordered by their performance in the blackjack games.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Get list of players", content = @Content(
                             mediaType = "application/json",
@@ -54,12 +53,17 @@ public class PlayerController {
                             mediaType = "application/json",
                             schema = @Schema(implementation = Player.class)
                     )),
-                    @ApiResponse(responseCode = "404", description = "Player not found")
+                    @ApiResponse(responseCode = "404", description = "Player not found", content = @Content(
+                            mediaType = "text/plain",
+                            examples = @ExampleObject(
+                                    name = "Player not found",
+                                    value = "No player found with id: 674487950b80db2bc72ea574"
+                            )))
             }
     )
     @PutMapping("/player/{playerId}")
     public Mono<ResponseEntity<Player>> updatePlayerName(
-            @Parameter(description = "Id of the player to update", example = "1234")
+            @Parameter(description = "Id of the player to update", example = "673f22257b21b20c20d0d290")
             @PathVariable String playerId,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "New name of the player",

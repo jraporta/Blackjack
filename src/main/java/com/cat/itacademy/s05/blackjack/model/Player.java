@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Schema(name = "Player", description = "Data object representing a player")
 public class Player {
 
-    @Schema(description = "Identifier of the player", example = "1234")
+    @Schema(description = "Identifier of the player", example = "673f22257b21b20c20d0d290")
     private @Id String id;
 
     @Schema(description = "Name of the player", example = "John Doe")

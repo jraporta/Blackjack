@@ -15,7 +15,7 @@ import java.util.Objects;
 @Schema(name = "PlayerInGame", description = "Data object representing a player in a game")
 public class PlayerInGame {
 
-    @Schema(description = "Identifier of the player", example = "1234")
+    @Schema(description = "Identifier of the player", example = "673f22257b21b20c20d0d290")
     private String id;
 
     @Schema(description = "Name of the player", example = "John Doe")

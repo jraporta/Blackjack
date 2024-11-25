@@ -49,7 +49,7 @@ public class PlayService {
             return Mono.error(new InvalidPlayException("Player has no bet. First play must be 'INITIAL_BET'."));
         }
         //Check play contains valid bet if play is INITIAL_BET
-        if (play.play().equals(Play.INITIAL_BET) && play.bet() == 0) {
+        if (play.play().equals(Play.INITIAL_BET) && play.bet() <= 0) {
             return Mono.error(new InvalidPlayException("Initial bet play must have a valid bet."));
         }
         return Mono.just(game);
