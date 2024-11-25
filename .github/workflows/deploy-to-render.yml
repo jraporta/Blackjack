@@ -40,8 +40,8 @@ jobs:
       - name: Delete the last version of the Docker image from Docker Hub
         run: |
           docker pull jraporta/blackjack:latest
-          docker tag jraporta/blackjack:latest jraporta/blackjack:<current_date_version>
-          docker push jraporta/blackjack:<current_date_version>
+          docker tag jraporta/blackjack:latest jraporta/blackjack:previous
+          docker push jraporta/blackjack:previous
 
       # Step 6: Build the Docker image
       - name: Build Docker image
