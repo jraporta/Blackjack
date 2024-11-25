@@ -2,23 +2,26 @@
 
 Create a reactive Spring Boot API for a Blackjack game.
 
+## ♠️♥️Description♦️♣️
+
+This API enables **multiplayer Blackjack games**, bringing the excitement of the casino to your application. Players can:
+
+- Place **bets** before the croupier deals the cards.
+- Interact using classic game actions like **hit**, **stand**, **double**, **split**, and **surrender**, following the widely accepted rules of Blackjack.
+- Play in a dynamic, real-time environment with other players.
+
+Whether you're simulating a casino or integrating a card game into your platform, this API provides the core mechanics needed to manage and play Blackjack seamlessly.
+
 ## 💻Technologies
 
-- Spring WebFlux
-- MongoDB
-- MongoDB Atlas
-- MySQL
-- Maven
-- Postman
-- Swagger
-- Docker
-- Docker Compose
-- Maven
-- Github actions
+- Frameworks & Libraries: Spring WebFlux, Swagger, Mockito, JUnit 
+- Databases: MongoDB, MongoDB Atlas, MySQL 
+- Tools: Maven, Postman, Docker, Docker Compose 
+- CI/CD: GitHub Actions
 
 ## 📋Requirements
 
-- Docker Desktop (for Windows and macOS) or Docker Engine (for Linux) must be installed.
+- Docker: Docker Desktop (Windows and macOS) or Docker Engine (Linux).
 
 ## 🛠️Installation
 
@@ -26,8 +29,9 @@ Create a reactive Spring Boot API for a Blackjack game.
 
 ## ▶️Execution
 
-### Run the project
+### MySQL and MongoDB version (Main branch)
 
+To run the project:
 - Download the `compose.yaml` file.
 - Make sure **Docker** is running in the local machine.
 - Open a command prompt window and navigate to the project directory where the `compose.yaml` file is located.
@@ -42,10 +46,17 @@ Alternatively, you can build the docker image locally instead of pulling it from
 - Start the services as defined in `docker-compose.yaml` by executing the command `docker-compose up --build`
 - Once the containers are up, follow the instructions in the above section to interact with the service.
 
+### Mongo Atlas version
+
+- Ensure docker is installed and running in your system.
+- Pull the image from Docker Hub: `docker pull jraporta/blackjack:latest`
+- Run the docker container: `docker run -e MONGODB_URI="{uri}" -p 8080:8080 jraporta/blackjack:latest`
+  Replace {uri} with a valid MongoDB URI to connect to Atlas.
+
 ## 🌐Deployment
 
-Deployed with Render (access via <https://blackjack-ld1x.onrender.com>).
-Note: When querying for first time, the system might take a couple of minutes to respond.
+Deployed with Render on <https://blackjack-ld1x.onrender.com>.
+Note: When querying for first time, the system might take a couple of minutes to respond due to Render's cold starts.
 
 ## 🤝Contributions
 
@@ -53,4 +64,6 @@ Personal project.
 
 ## 📄Documentation
 
-Access <http://localhost:8080/swagger-ui.html> and <http://localhost:8080/v3/api-docs> endpoint to access the api documentation.
+API documentation is available via Swagger:
+- Swagger UI: <http://localhost:8080/swagger-ui.html> or <https://blackjack-ld1x.onrender.com/swagger-ui.html>
+- OpenAPI spec: <http://localhost:8080/v3/api-docs> or <https://blackjack-ld1x.onrender.com/api-docs>.

@@ -30,7 +30,7 @@ public class GameController {
     @Operation(
             summary = "Create a game",
             description = "Creates a new Blackjack game with the player specified in the request body.\n" +
-                    "If a player with that name exists, it is retrieved from the database; otherwise, a new player is created.",
+                    "If a player with that name already exists, it is retrieved from the database; otherwise, a new player is created.",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Game created", content = @Content(
                             mediaType = "text/plain",
