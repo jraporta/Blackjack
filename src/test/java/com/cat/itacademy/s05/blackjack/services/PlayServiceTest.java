@@ -216,11 +216,11 @@ public class PlayServiceTest {
 
     @ParameterizedTest
     @CsvSource ({"DOUBLE", "SPLIT", "SURRENDER"})
-    void executePlay_PlaysOnlyValidAfterInitialDealPlayedWith3Cards_InvalidPlayException(Play play){
+    void executePlay_PlaysOnlyValidAfterInitialDealPlayedWith3Cards_InvalidPlayException(Play invalidPlay){
         game.getPlayers().getFirst().setBet(50);
         game.getPlayers().getFirst().setStatus(PlayerStatus.PLAYING);
         game.getPlayers().getFirst().setCards(List.of(new Card(null, null), new Card(null, null), new Card(null, null)));
-        playDTO = new PlayDTO("1234", play, 10);
+        playDTO = new PlayDTO("1234", invalidPlay, 10);
 
         StepVerifier.create(playService.executePlay(game, playDTO))
                 .expectError(InvalidPlayException.class)
@@ -229,12 +229,46 @@ public class PlayServiceTest {
 
     @Test
     void executePlay_PlayDoubleAndBust_BetDoublesAndCardGetsDealtAndStatusSetToBust(){
+        when(mockPlayerService.subtractMoney(anyString(), anyInt())).thenReturn(Mono.just(new Player()));
+        doAnswer(invocation -> ((List<Card>) invocation.getArguments()[1]).add(new Card(null, null)))
+                .when(mockDeckService).dealCard(any(), anyList());
+        when(mockBlackjackHelper.isBust(anyList())).thenReturn(true);
 
+        game.getPlayers().getFirst().setBet(50);
+        game.getPlayers().getFirst().setStatus(PlayerStatus.PLAYING);
+        game.getPlayers().getFirst().setCards(new ArrayList<>());
+        game.getPlayers().getFirst().getCards().addAll(List.of(new Card(null, null), new Card(null, null)));
+        playDTO = new PlayDTO("1234", Play.DOUBLE, 0);
+
+        StepVerifier.create(playService.executePlay(game, playDTO))
+                .consumeNextWith(game1 -> {
+                    assertEquals(PlayerStatus.BUST, game1.getPlayers().getFirst().getStatus(), "status is BUST");
+                    assertEquals(3, game1.getPlayers().getFirst().getCards().size(), "Player gets 1 card");
+                    assertEquals(100, game1.getPlayers().getFirst().getBet(), "Player bet doubles");
+                    assertTrue(game1.isConcluded(), "Game is concluded");
+                }).verifyComplete();
     }
 
     @Test
     void executePlay_PlayDoubleAndNotBust_BetDoublesAndCardGetsDealtAndStatusSetToStand(){
+        when(mockPlayerService.subtractMoney(anyString(), anyInt())).thenReturn(Mono.just(new Player()));
+        doAnswer(invocation -> ((List<Card>) invocation.getArguments()[1]).add(new Card(null, null)))
+                .when(mockDeckService).dealCard(any(), anyList());
+        when(mockBlackjackHelper.isBust(anyList())).thenReturn(false);
 
+        game.getPlayers().getFirst().setBet(50);
+        game.getPlayers().getFirst().setStatus(PlayerStatus.PLAYING);
+        game.getPlayers().getFirst().setCards(new ArrayList<>());
+        game.getPlayers().getFirst().getCards().addAll(List.of(new Card(null, null), new Card(null, null)));
+        playDTO = new PlayDTO("1234", Play.DOUBLE, 0);
+
+        StepVerifier.create(playService.executePlay(game, playDTO))
+                .consumeNextWith(game1 -> {
+                    assertEquals(PlayerStatus.STAND, game1.getPlayers().getFirst().getStatus(), "status is STAND");
+                    assertEquals(3, game1.getPlayers().getFirst().getCards().size(), "Player gets 1 card");
+                    assertEquals(100, game1.getPlayers().getFirst().getBet(), "Player bet doubles");
+                    assertTrue(game1.isConcluded(), "Game is concluded");
+                }).verifyComplete();
     }
 
     @Test
