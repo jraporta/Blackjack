@@ -41,7 +41,10 @@ Alternatively, you can build the docker image locally instead of pulling it from
 
 ## 🌐Deployment
 
-Not deployed.
+## 🌐Deployment
+
+Deployed with Render (access via <https://blackjack-ld1x.onrender.com>).
+Note: When querying for first time, the system might take a couple of minutes to respond.
 
 ## 🤝Contributions
 
