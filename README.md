@@ -2,7 +2,7 @@
 
 Create a reactive Spring Boot API for a Blackjack game.
 
-## ♠️♥️Description♦️♣️
+## ♠️Description
 
 This API enables **multiplayer Blackjack games**, bringing the excitement of the casino to your application. Players can:
 

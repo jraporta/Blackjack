@@ -1,0 +1,203 @@
+{
+	"info": {
+		"_postman_id": "5340f41a-85b4-45d7-8ef0-0a17b03107c6",
+		"name": "Sprint5BlackjackDeployed",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38776074"
+	},
+	"item": [
+		{
+			"name": "new game",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "Elvis Presley",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/game/new",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"game",
+						"new"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get Game",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/game/hhjhhj",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"game",
+						"hhjhhj"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "play",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"playerId\":5,\r\n    \"play\":\"HIT\",\r\n    \"bet\":10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/game/6731414117ee6a0d6845b8c0/play",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"game",
+						"6731414117ee6a0d6845b8c0",
+						"play"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update player name",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "Shakira",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{server}}:{{port}}/player/8",
+					"host": [
+						"{{server}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"player",
+						"8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get ranking",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/ranking",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"ranking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete Game",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/game/hhjhhj/delete",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"game",
+						"hhjhhj",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "swagger-ui",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/swagger-ui.html",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"swagger-ui.html"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "server",
+			"value": "localhost",
+			"type": "string"
+		},
+		{
+			"key": "port",
+			"value": "8081",
+			"type": "string"
+		},
+		{
+			"key": "url",
+			"value": "https://blackjack-ld1x.onrender.com",
+			"type": "string"
+		}
+	]
+}
